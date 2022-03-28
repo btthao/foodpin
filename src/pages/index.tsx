@@ -1,9 +1,8 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
+import { Layout } from "../components";
 
 const Home: NextPage = () => {
-  return <div className="font-bold text-3xl">test</div>;
+  return <Layout>feed</Layout>;
 };
 
 export default Home;
