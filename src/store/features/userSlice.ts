@@ -4,11 +4,13 @@ import { RootState } from "../store";
 export interface UserState {
   username: string;
   image: string;
+  id: string;
 }
 
 const initialState: UserState = {
   username: "",
   image: "",
+  id: "",
 };
 
 export const userSlice = createSlice({
@@ -16,13 +18,15 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action: PayloadAction<UserState>) => {
-      const { username, image } = action.payload;
+      const { username, image, id } = action.payload;
       state.username = username;
       state.image = image;
+      state.id = id;
     },
     logout: (state) => {
       state.username = "";
       state.image = "";
+      state.id = "";
     },
   },
 });
