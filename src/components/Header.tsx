@@ -1,13 +1,7 @@
-import {
-  Button,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { GoogleLoginResponse } from "react-google-login";
 import { IoIosAddCircle, IoIosNotifications } from "react-icons/io";
 import { login, logout, selectUser } from "../store/features/userSlice";
@@ -48,25 +42,37 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="shadow-md px-4 sm:px-5 py-3 sm:py-4 bg-white">
-      <div className="flex justify-between items-center">
-        <div className="cursor-pointer" onClick={() => router.push("/")}>
-          <Text
-            color="primary"
-            className="hidden sm:block text-2xl sm:text-3xl font-extrabold"
-          >
-            FoodPin
-          </Text>
-          <Text
-            color="primary"
-            className="block sm:hidden text-2xl sm:text-3xl font-extrabold"
-          >
-            F
-          </Text>
+    <header className="fixed top-0 left-0 w-full shadow-md px-4 sm:px-5  bg-white z-[1000]">
+      <div className="flex h-20 items-center">
+        {/* logo */}
+        <div
+          className="cursor-pointer flex items-center"
+          onClick={() => router.push("/")}
+        >
+          <Image src="/assets/logo.png" width={30} height={30} alt="logo" />
         </div>
-        <div className="  flex-1 mx-4 sm:mx-7">
+        {/* categories */}
+        <Button
+          variant="ghost"
+          border="2px"
+          borderColor="white"
+          borderRadius="3xl"
+          fontWeight="bold"
+          fontSize={{
+            md: "large",
+          }}
+          py="5"
+          px="4"
+          className="ml-4 sm:ml-7"
+          _hover={{ bg: "bgGrey", borderColor: "bgGrey" }}
+        >
+          Categories
+        </Button>
+        {/* searchbar */}
+        <div className="flex-1 mx-4 sm:mx-7">
           <Search />
         </div>
+        {/* user space */}
         <div>
           {!username ? (
             <LoginModal />
@@ -79,7 +85,7 @@ const Header: React.FC = () => {
                 borderRadius="full"
                 variant="ghost"
               >
-                <IoIosNotifications className="text-3xl text-gray-500" />
+                <IoIosNotifications className="text-3xl text-grey-icon" />
               </Button>
               <Button
                 p="0"
@@ -90,9 +96,8 @@ const Header: React.FC = () => {
                 mx="2"
                 onClick={() => router.push("/new-recipe")}
               >
-                <IoIosAddCircle className="text-3xl text-gray-500" />
+                <IoIosAddCircle className="text-3xl text-grey-icon" />
               </Button>
-
               <Menu autoSelect={false}>
                 <MenuButton
                   p="0"
@@ -104,14 +109,24 @@ const Header: React.FC = () => {
                 >
                   <Avatar name={username} src={image} />
                 </MenuButton>
-                <MenuList className="shadow-elevated" border="none">
+                <MenuList
+                  className="shadow-elevated"
+                  border="none"
+                  minWidth="none"
+                >
                   <MenuItem
+                    fontWeight="bold"
+                    pr="20"
                     _hover={{ bg: "bgGrey" }}
                     onClick={() => router.push(`/${id}`)}
                   >
                     My profile
                   </MenuItem>
-                  <MenuItem _hover={{ bg: "bgGrey" }} onClick={handleLogout}>
+                  <MenuItem
+                    fontWeight="bold"
+                    _hover={{ bg: "bgGrey" }}
+                    onClick={handleLogout}
+                  >
                     Log out
                   </MenuItem>
                 </MenuList>

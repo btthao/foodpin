@@ -7,13 +7,14 @@ const Layout: React.FC = ({ children }) => {
   return (
     <Container
       maxW="none"
+      minW="350px"
       p="0"
       m="0"
       bg={`${router.asPath.includes("new-recipe") ? "bgGrey" : "white"}`}
-      className="min-h-screen flex flex-col"
+      className=" min-h-screen h-full "
     >
       <Header />
-      <div className="flex-grow">{children}</div>
+      <div className="relative mt-20">{children}</div>
     </Container>
   );
 };

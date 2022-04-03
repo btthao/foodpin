@@ -15,7 +15,7 @@ const theme = extendTheme({
           bg: "primary",
           color: "white",
           _hover: {
-            bg: "#e22749",
+            bg: "red.600",
           },
         },
         solid: {
@@ -42,6 +42,15 @@ const theme = extendTheme({
         ghost: {
           _hover: {
             bg: "bgGrey",
+            boxShadow: "none",
+          },
+          _active: {
+            bg: "bgGrey",
+            boxShadow: "none",
+          },
+          _focus: {
+            bg: "none",
+            boxShadow: "none",
           },
         },
       },
@@ -52,7 +61,7 @@ const theme = extendTheme({
       error: "red.500",
       success: "green.500",
       primary: {
-        default: "#da415d",
+        default: "red.500",
       },
       secondary: {
         default: "#FFE535",

@@ -9,6 +9,10 @@ module.exports = {
       boxShadow: {
         elevated: "0 0 8px rgba(0,0,0,0.1)",
       },
+      textColor: {
+        grey1: "#efefef",
+        "grey-icon": "#767676",
+      },
       keyframes: {
         "slide-up": {
           "0%": {
