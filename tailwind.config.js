@@ -13,6 +13,10 @@ module.exports = {
         grey1: "#efefef",
         "grey-icon": "#767676",
       },
+      backgroundColor: {
+        grey1: "#efefef",
+        grey2: "#E2E2E2",
+      },
       keyframes: {
         "slide-up": {
           "0%": {
