@@ -177,12 +177,13 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   if (uploadSuccess) {
     return (
       <div className="w-full relative bg-white p-5 rounded-xl shadow-sm flex justify-between gap-10">
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 flex-1">
           <AspectRatio
             width="60px"
             borderRadius="lg"
             overflow="hidden"
             ratio={1}
+            className="hidden sm:block"
           >
             <img
               src={image2 !== "" ? image2 : URL.createObjectURL(image1)}
@@ -190,15 +191,22 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               className="object-cover"
             />
           </AspectRatio>
-          {/* set text color */}
-          <div className="text-gray-600 ">
-            <h1 className="text-lg font-bold">{name}</h1>
+          <div className="text-gray-600 flex-1">
+            <h1 className="text-md sm:text-lg font-bold line-clamp-1">
+              {name}
+            </h1>
             <p className="text-xs">Published just now</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button borderRadius="3xl">See it</Button>
-          <CloseButton borderRadius="full" size="sm" />
+          <CloseButton
+            borderRadius="full"
+            size="sm"
+            onClick={() => {
+              deleteFn(id);
+            }}
+          />
         </div>
       </div>
     );
