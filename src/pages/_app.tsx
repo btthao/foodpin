@@ -69,6 +69,7 @@ const theme = extendTheme({
       hoverGrey: "#e1e1e1",
       bgGrey: "#efefef",
       borderGrey: "#CDCDCD",
+      placeholderGrey: "#757575",
     },
   },
 });
