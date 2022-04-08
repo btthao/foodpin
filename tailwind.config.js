@@ -11,6 +11,7 @@ module.exports = {
       },
       textColor: {
         grey1: "#efefef",
+        "grey-muted": "#757575",
         "grey-icon": "#767676",
       },
       backgroundColor: {

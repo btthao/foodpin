@@ -21,7 +21,7 @@ interface ListProps {
   updateList: Function;
   upload: number;
 }
-
+// show more or less
 const List: React.FC<ListProps> = ({ name, list, updateList, upload }) => {
   const [newItem, setNewItem] = useState("");
 
@@ -87,8 +87,7 @@ const List: React.FC<ListProps> = ({ name, list, updateList, upload }) => {
         {list.map((item, idx) => (
           <li
             key={`${name}-${item}-${idx}`}
-            // animated when edit => fix with animated state
-            className={` ${idx === list.length - 1 ? "animate-slide-up" : ""} ${
+            className={` ${
               name.includes("instructions") ? "mb-3" : "mb-[0.15rem]"
             }`}
           >
