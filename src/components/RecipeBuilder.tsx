@@ -1,6 +1,11 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AspectRatio,
   Box,
   Button,
+  CloseButton,
   Input,
   Menu,
   MenuButton,
@@ -12,8 +17,7 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { IoIosImages } from "react-icons/io";
@@ -27,17 +31,21 @@ import { duplicateRecipeBuilderData, recipeBuilderData } from "../utils/data";
 interface RecipeBuilderProps {
   id: string;
   builderData: duplicateRecipeBuilderData;
-  duplicateFn: (
+  duplicateFn?: (
     afterId: string | null,
     data: duplicateRecipeBuilderData
   ) => void;
   deleteFn: (id: string) => void;
-  showError: () => void;
+  showError: (text: string) => void;
+  updateBuildersPreview?: (id: string, image: string) => void;
 }
 
 type RecipeDoc = recipeBuilderData & {
   _type: string;
-  byUser: any;
+  byUser: {
+    _type: string;
+    _ref: string;
+  };
 };
 
 export enum uploadState {
@@ -53,6 +61,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   duplicateFn,
   deleteFn,
   showError,
+  updateBuildersPreview,
 }) => {
   // start recipe data state
   const [name, setName] = useState<string>(builderData?.name || "");
@@ -75,11 +84,18 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   );
   // end recipe data state
   const { id: userId } = useAppSelector(selectUser);
-  const router = useRouter();
   const [upload, setUpload] = useState<number>(uploadState.NOT_UPLOADING);
   const [showSpinner, setShowSpinner] = useState(false);
+  const [isMissingFields, setIsMissingFields] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const acceptedImgType = ["image/jpeg", "image/png", "image/webp"];
+
+  useEffect(() => {
+    if (updateBuildersPreview) {
+      updateBuildersPreview(id, image1 ? URL.createObjectURL(image1) : "");
+    }
+  }, [image1]);
 
   const createDoc = (image1?: any) => {
     const doc: RecipeDoc = {
@@ -110,11 +126,13 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     client
       .create(doc)
       .then(() => {
-        alert("upload success");
+        setUploadSuccess(true);
         // router.push("/");
       })
       .catch((error: { message: any }) => {
-        showError();
+        showError(
+          "There was a problem uploading your recipe. Try again later."
+        );
         setShowSpinner(false);
         console.log("Upload failed:", error.message);
       });
@@ -122,6 +140,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
 
   const uploadRecipe = () => {
     setUpload(uploadState.ATTEMPT_UPLOADING);
+    setIsMissingFields(false);
 
     if (
       name &&
@@ -142,25 +161,59 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           })
           .catch((error: { message: any }) => {
             console.log("Upload failed:", error.message);
-            showError();
+            showError(
+              "There was a problem uploading your recipe. Try again later."
+            );
             setShowSpinner(false);
           });
       } else {
         createDoc();
       }
+    } else {
+      setIsMissingFields(true);
     }
   };
+
+  if (uploadSuccess) {
+    return (
+      <div className="w-full relative bg-white p-5 rounded-xl shadow-sm flex justify-between gap-10">
+        <div className="flex items-center gap-5">
+          <AspectRatio
+            width="60px"
+            borderRadius="lg"
+            overflow="hidden"
+            ratio={1}
+          >
+            <img
+              src={image2 !== "" ? image2 : URL.createObjectURL(image1)}
+              alt="uploaded-pic"
+              className="object-cover"
+            />
+          </AspectRatio>
+          {/* set text color */}
+          <div className="text-gray-600 ">
+            <h1 className="text-lg font-bold">{name}</h1>
+            <p className="text-xs">Published just now</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button borderRadius="3xl">See it</Button>
+          <CloseButton borderRadius="full" size="sm" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full relative bg-white px-5 py-8 md:py-12 md:px-9 rounded-xl shadow-sm">
       {showSpinner && (
-        <div className="absolute  top-0 left-0 w-full h-full bg-white z-50  opacity-90 flex justify-center pt-20">
+        <div className="absolute  top-0 left-0 w-full h-full bg-white z-50 opacity-90 flex justify-center pt-20">
           <Oval
             ariaLabel="loading-indicator"
             height={100}
             width={100}
-            strokeWidth={5}
-            color="#f1b0b0"
+            strokeWidth={4}
+            color="#8f8f8f"
             secondaryColor="#d8d8d8"
           />
         </div>
@@ -183,36 +236,51 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               onClick={() => {
                 deleteFn(id);
               }}
+              pr="16"
               fontWeight="bold"
               _hover={{ bg: "bgGrey" }}
             >
               Delete
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                duplicateFn(id, {
-                  name,
-                  ingredients,
-                  instructions,
-                  categories,
-                  servings,
-                  image1,
-                  image2,
-                  destination,
-                });
-              }}
-              pr="16"
-              fontWeight="bold"
-              _hover={{ bg: "bgGrey" }}
-            >
-              Duplicate
-            </MenuItem>
+            {duplicateFn && (
+              <MenuItem
+                onClick={() => {
+                  duplicateFn(id, {
+                    name,
+                    ingredients,
+                    instructions,
+                    categories,
+                    servings,
+                    image1,
+                    image2,
+                    destination,
+                  });
+                }}
+                pr="16"
+                fontWeight="bold"
+                _hover={{ bg: "bgGrey" }}
+              >
+                Duplicate
+              </MenuItem>
+            )}
           </MenuList>
         </Menu>
         <Button variant="primary" onClick={() => uploadRecipe()}>
           Upload recipe
         </Button>
       </div>
+      {/* missing fields warning */}
+      {isMissingFields && (
+        <div className="px-3">
+          <Alert className="mt-6" borderRadius="lg" status="error">
+            <AlertIcon />
+            <AlertDescription className="flex-grow font-semibold">
+              Please fill in missing fields.
+            </AlertDescription>
+            <CloseButton onClick={() => setIsMissingFields(false)} />
+          </Alert>
+        </div>
+      )}
       {/* recipe name */}
       <div className="px-3 mt-7">
         <Input
@@ -225,7 +293,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           className="font-bold"
           fontSize="2xl"
           borderColor="borderGrey"
-          _placeholder={{ color: "#757575" }}
+          _placeholder={{ color: "placeholderGrey" }}
         />
       </div>
       {/* recipe details */}
@@ -243,8 +311,8 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
             >
               <NumberInputField />
               <NumberInputStepper>
-                <NumberIncrementStepper color="gray.500" />
-                <NumberDecrementStepper color="gray.500" />
+                <NumberIncrementStepper color="placeholderGrey" />
+                <NumberDecrementStepper color="placeholderGrey" />
               </NumberInputStepper>
             </NumberInput>
           </div>
@@ -284,7 +352,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               onChange={(e) => setDestination(e.target.value)}
               placeholder="Add a destination link"
               borderColor="borderGrey"
-              _placeholder={{ color: "#757575" }}
+              _placeholder={{ color: "placeholderGrey" }}
             />
           </div>
         </div>
@@ -301,7 +369,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                 className="relative rounded-md md:min-h-[380px] md:p-3 md:flex md:flex-col"
               >
                 <div className="flex flex-row items-center justify-between px-4 py-4 md:flex-col-reverse md:justify-center md:gap-4 md:border md:border-dashed md:border-gray-400 md:rounded-md md:flex-1">
-                  <p className="text-black font-bold ">Click to upload</p>
+                  <p className="font-bold">Click to upload</p>
                   <IoIosImages className="text-3xl text-grey-icon" />
                 </div>
                 <Input
@@ -315,33 +383,41 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                   className="cursor-pointer h-full w-full absolute top-0 left-0 opacity-0"
                 />
               </Box>
-              <p className="mt-3 text-[#757575] text-xs">
+              <p className="mt-3 text-grey-muted text-xs">
                 Recommendation: Use high-quality JPG, JPEG, PNG.
               </p>
             </div>
           ) : (
-            <Box
-              border="1px"
-              borderColor="borderGrey"
-              className="relative p-2 rounded-lg"
-            >
-              <img
-                src={image2 !== "" ? image2 : URL.createObjectURL(image1)}
-                alt="uploaded-pic"
-                className="h-full w-full object-contain rounded-lg"
-              />
-              <Button
-                className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full p-1 shadow-2xl"
-                width="40px"
-                height="40px"
-                onClick={() => {
-                  setImage1(null);
-                  setImage2("");
-                }}
+            <div>
+              <Box
+                border="1px"
+                borderColor="borderGrey"
+                className="relative p-2 rounded-lg"
               >
-                <FaTrash />
-              </Button>
-            </Box>
+                <img
+                  src={image2 !== "" ? image2 : URL.createObjectURL(image1)}
+                  alt="uploaded-pic"
+                  className="h-full w-full object-contain rounded-lg"
+                />
+                <Button
+                  className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full p-1 shadow-2xl"
+                  width="40px"
+                  height="40px"
+                  onClick={() => {
+                    setImage1(null);
+                    setImage2("");
+                  }}
+                >
+                  <FaTrash />
+                </Button>
+              </Box>
+              {image2 && (
+                <p className="mt-3 text-grey-muted text-xs">
+                  Note: image from this link might be of low quality. Please
+                  consider uploading your own photo.
+                </p>
+              )}
+            </div>
           )}
         </div>
       </div>
