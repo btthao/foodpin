@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import userReducer from "./features/userSlice";
+import feedReducer from "./features/feedSlice";
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
+    feed: feedReducer,
   },
 });
 

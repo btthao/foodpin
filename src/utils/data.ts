@@ -6,7 +6,7 @@ type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
     [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
   }[Keys];
 
-export type recipeBuilderData = RequireAtLeastOne<
+export type RecipeBuilderData = RequireAtLeastOne<
   {
     name: string;
     servings: string;
@@ -20,4 +20,55 @@ export type recipeBuilderData = RequireAtLeastOne<
   "image1" | "image2"
 >;
 
-export type duplicateRecipeBuilderData = Partial<recipeBuilderData>;
+export type DuplicateRecipeBuilderData = Partial<RecipeBuilderData>;
+
+export type PinOwner = {
+  _id: string;
+  userName: string;
+  image: string;
+};
+
+export type RecipeData = RecipeBuilderData & {
+  _id: string;
+  byUser: PinOwner;
+  comments: any[] | null;
+  save: any[] | null;
+};
+
+export const feedQuery = `*[_type == "recipe"] | order(_createdAt desc) {
+      _id,
+      name,
+      ingredients,
+      instructions,
+      categories,
+      servings,
+      image1{
+        asset->{
+          url
+        }
+      },
+      image2,
+      destination,
+      byUser->{
+        _id,
+        userName,
+        image
+      },
+      save[]{
+        _key,
+        byUser->{
+          _id,
+          userName,
+          image
+        },
+      },
+      comments[]{
+        _key,
+        comment,
+        byUser->{
+          _id,
+          userName,
+          image
+        },
+      },
+    } `;
