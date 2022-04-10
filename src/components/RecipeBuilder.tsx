@@ -26,21 +26,21 @@ import { Categories, List } from ".";
 import { client } from "../client";
 import { selectUser } from "../store/features/userSlice";
 import { useAppSelector } from "../store/store";
-import { duplicateRecipeBuilderData, recipeBuilderData } from "../utils/data";
+import { DuplicateRecipeBuilderData, RecipeBuilderData } from "../utils/data";
 // pass down prop id to list and categories
 interface RecipeBuilderProps {
   id: string;
-  builderData: duplicateRecipeBuilderData;
+  builderData: DuplicateRecipeBuilderData;
   duplicateFn?: (
     afterId: string | null,
-    data: duplicateRecipeBuilderData
+    data: DuplicateRecipeBuilderData
   ) => void;
   deleteFn: (id: string) => void;
   showError: (text: string) => void;
   updateBuildersPreview?: (id: string, image: string) => void;
 }
 
-type RecipeDoc = recipeBuilderData & {
+type RecipeDoc = RecipeBuilderData & {
   _type: string;
   byUser: {
     _type: string;

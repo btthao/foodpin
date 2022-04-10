@@ -4,7 +4,7 @@ import { BiChevronRight } from "react-icons/bi";
 import { BsImage } from "react-icons/bs";
 import { GrAdd } from "react-icons/gr";
 import { v4 as uuidv4 } from "uuid";
-import { duplicateRecipeBuilderData } from "../utils/data";
+import { DuplicateRecipeBuilderData } from "../utils/data";
 import RecipeBuilder from "./RecipeBuilder";
 
 interface BuildersStackProps {
@@ -16,7 +16,7 @@ const BuildersStack: React.FC<BuildersStackProps> = ({ showError }) => {
   const [builders, setBuilders] = useState<
     {
       id: string;
-      data: duplicateRecipeBuilderData;
+      data: DuplicateRecipeBuilderData;
     }[]
   >([{ id: uuidv4(), data: {} }]);
 
@@ -37,7 +37,7 @@ const BuildersStack: React.FC<BuildersStackProps> = ({ showError }) => {
 
   const duplicateBuilder = (
     afterId: string | null,
-    data: duplicateRecipeBuilderData
+    data: DuplicateRecipeBuilderData
   ) => {
     const id = uuidv4();
 

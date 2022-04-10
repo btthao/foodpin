@@ -1,7 +1,7 @@
 import { Button, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { duplicateRecipeBuilderData } from "../utils/data";
+import { DuplicateRecipeBuilderData } from "../utils/data";
 import RecipeBuilder from "./RecipeBuilder";
 
 interface RecipeFromWebProps {
@@ -18,7 +18,7 @@ const isValidList = (list: any[]) => {
 const RecipeFromWeb: React.FC<RecipeFromWebProps> = ({ showError }) => {
   const [url, setUrl] = useState("");
   const [recipeInfo, setRecipeInfo] =
-    useState<duplicateRecipeBuilderData | null>(null);
+    useState<DuplicateRecipeBuilderData | null>(null);
   const [loading, setLoading] = useState(false);
 
   const getRecipeData = async () => {
