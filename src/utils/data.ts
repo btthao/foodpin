@@ -35,7 +35,33 @@ export type RecipeData = RecipeBuilderData & {
   save: any[] | null;
 };
 
-export const feedQuery = `*[_type == "recipe"] | order(_createdAt desc) {
+export const feedQuery = `*[_type == "recipe"] {
+      _id,
+      name,
+      image1{
+        asset->{
+          url
+        }
+      },
+      image2,
+      destination,
+      byUser->{
+        _id,
+        userName,
+        image
+      },
+      save[]{
+        _key,
+        byUser->{
+          _id,
+          userName,
+          image
+        },
+      },
+    } `;
+
+export const recipeQuery = (id: string) => {
+  return `*[_type == "recipe" && _id == '${id}'] {
       _id,
       name,
       ingredients,
@@ -72,3 +98,4 @@ export const feedQuery = `*[_type == "recipe"] | order(_createdAt desc) {
         },
       },
     } `;
+};

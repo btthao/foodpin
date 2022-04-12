@@ -1,12 +1,10 @@
-import { useEffect } from "react";
 import Masonry from "react-masonry-css";
-import { client } from "../client";
-import { selectFeed, setFeedData } from "../store/features/feedSlice";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { feedQuery } from "../utils/data";
+import { RecipeData } from "../utils/data";
 import Pin from "./Pin";
 
-interface FeedProps {}
+interface FeedProps {
+  data: RecipeData[];
+}
 
 const breakpointColumnsObj = {
   default: 16,
@@ -20,21 +18,11 @@ const breakpointColumnsObj = {
   700: 2,
 };
 
-const Feed: React.FC<FeedProps> = ({}) => {
-  const dispatch = useAppDispatch();
-  const { mainFeed } = useAppSelector(selectFeed);
-
-  useEffect(() => {
-    client.fetch(feedQuery).then((data) => {
-      console.log(data);
-      dispatch(setFeedData({ type: "main", data }));
-    });
-  }, []);
-
+const Feed: React.FC<FeedProps> = ({ data }) => {
   return (
-    <div className="py-3 px-8 sm:px-20">
+    <div className="px-6 sm:px-14 md:px-20">
       <Masonry className="flex" breakpointCols={breakpointColumnsObj}>
-        {mainFeed.map((pin) => (
+        {data.map((pin) => (
           <Pin key={"pin-" + pin._id} data={pin} />
         ))}
       </Masonry>

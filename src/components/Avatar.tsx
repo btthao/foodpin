@@ -7,7 +7,16 @@ interface AvatarProps {
 
 const Avatar: React.FC<AvatarProps> = ({ name, src }) => {
   return (
-    <ChakraAvatar size="sm" width="26px" height="26px" name={name} src={src} />
+    <ChakraAvatar
+      size="sm"
+      width="26px"
+      height="26px"
+      name={name}
+      src={src}
+      bg="bgGrey"
+      color="black"
+      className="text-xs"
+    />
   );
 };
 
