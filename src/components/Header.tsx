@@ -1,7 +1,7 @@
 import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GoogleLoginResponse } from "react-google-login";
 import { IoIosAddCircle, IoIosNotifications } from "react-icons/io";
 import { login, logout, selectUser } from "../store/features/userSlice";
@@ -14,6 +14,7 @@ const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const { username, image, id } = useAppSelector(selectUser);
   const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
 
   // check if user already exists in local storage
   useEffect(() => {
@@ -41,8 +42,28 @@ const Header: React.FC = () => {
     router.push("/");
   };
 
+  const handleScroll = () => {
+    if (window.pageYOffset > 0) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 w-full shadow-md px-4 sm:px-5  bg-white z-[1000]">
+    <header
+      className={`fixed top-0 left-0 w-full  px-4 sm:px-5  bg-white z-[1000] transition-shadow duration-500 ${
+        scrolled ? "shadow-sm" : "shadow-none"
+      }`}
+    >
       <div className="flex h-20 items-center">
         {/* logo */}
         <div
