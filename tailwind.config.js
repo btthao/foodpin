@@ -37,9 +37,6 @@ module.exports = {
       transitionProperty: {
         height: "height",
       },
-      cursor: {
-        "zoom-in": "zoom-in",
-      },
     },
   },
   plugins: [require("@tailwindcss/line-clamp")],
