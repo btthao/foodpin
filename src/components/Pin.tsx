@@ -9,6 +9,7 @@ import { selectUser } from "../store/features/userSlice";
 import { useAppSelector } from "../store/store";
 import { RecipeData } from "../utils/data";
 import { copyUrlToClipboard } from "../utils/helpers";
+import SaveRecipe from "./SaveRecipe";
 
 interface PinProps {
   data: RecipeData;
@@ -19,18 +20,6 @@ const Pin: React.FC<PinProps> = ({ data }) => {
   const [hovered, setHovered] = useState(false);
   const { id: currentUserId } = useAppSelector(selectUser);
   const toast = useToast();
-
-  const [savedByCurrentUser, setSavedByCurrentUser] = useState(
-    save && save.length
-      ? save.filter((savedBy) => savedBy.byUser._id === currentUserId)
-          .length === 1
-      : false
-  );
-
-  const saveRecipe = () => {
-    setSavedByCurrentUser(!savedByCurrentUser);
-  };
-
   const router = useRouter();
 
   return (
@@ -61,34 +50,16 @@ const Pin: React.FC<PinProps> = ({ data }) => {
                 </a>
               </Link>
             </div>
-            {savedByCurrentUser ? (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  saveRecipe();
-                }}
-                bg="black"
-                color="white"
-                _hover={{ bg: "black", color: "white" }}
-                _active={{ bg: "black", color: "white" }}
-                borderRadius="3xl"
-                py="6"
-              >
-                Saved
-              </Button>
-            ) : (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  saveRecipe();
-                }}
-                variant="primary"
-                borderRadius="3xl"
-                py="6"
-              >
-                Save
-              </Button>
-            )}
+            <SaveRecipe
+              userId={currentUserId}
+              recipeId={_id}
+              saved={
+                save && save.length
+                  ? save.filter((savedBy) => savedBy.userId === currentUserId)
+                      .length === 1
+                  : false
+              }
+            />
           </div>
           <div className="w-full flex justify-between items-center gap-6">
             <div className="truncate text-sm">
