@@ -22,7 +22,7 @@ export type RecipeBuilderData = RequireAtLeastOne<
 
 export type DuplicateRecipeBuilderData = Partial<RecipeBuilderData>;
 
-export type PinOwner = {
+export type User = {
   _id: string;
   userName: string;
   image: string;
@@ -30,7 +30,7 @@ export type PinOwner = {
 
 export type RecipeData = RecipeBuilderData & {
   _id: string;
-  byUser: PinOwner;
+  byUser: User;
   comments: any[] | null;
   save: any[] | null;
 };
@@ -52,6 +52,7 @@ export const feedQuery = `*[_type == "recipe"] {
       },
       save[]{
         _key,
+        userId,
         byUser->{
           _id,
           userName,
@@ -82,6 +83,7 @@ export const recipeQuery = (id: string) => {
       },
       save[]{
         _key,
+        userId,
         byUser->{
           _id,
           userName,

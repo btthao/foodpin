@@ -11,11 +11,10 @@ const Avatar: React.FC<AvatarProps> = ({ name, src }) => {
       size="sm"
       width="26px"
       height="26px"
-      name={name}
+      name={name.replace(" ", "-")}
       src={src}
       bg="bgGrey"
       color="black"
-      className="text-xs"
     />
   );
 };
