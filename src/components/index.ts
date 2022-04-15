@@ -12,3 +12,5 @@ export { default as Feed } from "./Feed";
 export { default as Pin } from "./recipe/Pin";
 export { default as Collapses } from "./recipe/Collapses";
 export { default as SaveRecipe } from "./recipe/SaveRecipe";
+export { default as EditRecipe } from "./recipe/EditRecipe";
+export { default as DeleteRecipe } from "./recipe/DeleteRecipe";

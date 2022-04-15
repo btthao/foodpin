@@ -15,7 +15,13 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaLink } from "react-icons/fa";
 import { ImSpoonKnife } from "react-icons/im";
 import { client, urlFor } from "../../client";
-import { Categories, Collapses, SaveRecipe } from "../../components";
+import {
+  Categories,
+  Collapses,
+  EditRecipe,
+  SaveRecipe,
+  DeleteRecipe,
+} from "../../components";
 import { selectUser } from "../../store/features/userSlice";
 import { useAppSelector } from "../../store/store";
 import { RecipeData, recipeQuery } from "../../utils/data";
@@ -34,23 +40,39 @@ const RecipePage: NextPage = () => {
   });
 
   const toast = useToast();
+  const [editFinished, setEditFinished] = useState(false);
+  const [deleteFinished, setDeleteFinished] = useState(false);
+  const [recipeNotExist, setRecipeNotExist] = useState(false);
 
-  useEffect(() => {
+  const fetchRecipe = () => {
     if (recipeId) {
-      progress.start();
+      // no need to show loading bar when refetch after edit
+      if (!editFinished) {
+        progress.start();
+      }
 
       const query = recipeQuery(recipeId);
 
       client
         .fetch(query)
         .then((data) => {
-          console.log(data);
+          if (!data.length) {
+            setRecipeNotExist(true);
+          }
           setRecipeData(data[0]);
-          progress.finish();
+          if (!editFinished) {
+            progress.finish();
+          } else {
+            setEditFinished(false);
+          }
         })
         .catch((err) => {
           console.error(err);
-          progress.finish();
+          if (!editFinished) {
+            progress.finish();
+          } else {
+            setEditFinished(false);
+          }
           toast.closeAll();
           toast({
             title: "Something went wrong. Try again later.",
@@ -60,7 +82,24 @@ const RecipePage: NextPage = () => {
           });
         });
     }
+  };
+
+  useEffect(() => {
+    fetchRecipe();
   }, [recipeId]);
+
+  // fetch again after edit
+  useEffect(() => {
+    if (editFinished) {
+      fetchRecipe();
+    }
+  }, [editFinished]);
+
+  useEffect(() => {
+    if (deleteFinished) {
+      setRecipeData(null);
+    }
+  }, [deleteFinished]);
 
   return (
     <>
@@ -100,13 +139,25 @@ const RecipePage: NextPage = () => {
                       minWidth="none"
                     >
                       {recipeData.destination && (
-                        <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
-                          <a target="_blank" href={recipeData.destination}>
+                        <MenuItem
+                          fontWeight="bold"
+                          _hover={{ bg: "bgGrey" }}
+                          _focus={{ bg: "transparent" }}
+                        >
+                          <a
+                            target="_blank"
+                            href={recipeData.destination}
+                            className="w-full"
+                          >
                             View destination
                           </a>
                         </MenuItem>
                       )}
-                      <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
+                      <MenuItem
+                        fontWeight="bold"
+                        _hover={{ bg: "bgGrey" }}
+                        _focus={{ bg: "transparent" }}
+                      >
                         <a
                           target="_blank"
                           href={
@@ -114,18 +165,26 @@ const RecipePage: NextPage = () => {
                               ? urlFor(recipeData.image1).url()
                               : recipeData.image2
                           }
+                          className="w-full"
                         >
                           View image
                         </a>
                       </MenuItem>
                       {recipeData.byUser._id === currentUserId && (
                         <>
-                          <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
-                            Edit recipe
-                          </MenuItem>
-                          <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
-                            Delete recipe
-                          </MenuItem>
+                          <EditRecipe
+                            data={recipeData}
+                            editFinished={editFinished}
+                            finishEditExistingRecipe={() =>
+                              setEditFinished(true)
+                            }
+                          />
+                          <DeleteRecipe
+                            id={recipeData._id}
+                            finishDeleteExistingRecipe={() =>
+                              setDeleteFinished(true)
+                            }
+                          />
                         </>
                       )}
                     </MenuList>
@@ -154,7 +213,7 @@ const RecipePage: NextPage = () => {
                   userId={currentUserId}
                   recipeId={recipeData._id}
                   saved={
-                    recipeData.save && recipeData.save.length
+                    recipeData.save && recipeData.save.length > 0
                       ? recipeData.save.filter(
                           (savedBy) => savedBy.userId === currentUserId
                         ).length === 1
@@ -178,7 +237,7 @@ const RecipePage: NextPage = () => {
                 {recipeData.name}
               </h1>
 
-              {recipeData.categories && recipeData.categories.length && (
+              {recipeData.categories && recipeData.categories.length > 0 && (
                 <div className="mt-1">
                   <Categories
                     id={recipeData._id}
@@ -194,7 +253,7 @@ const RecipePage: NextPage = () => {
                   Servings: {recipeData.servings}
                 </div>
               )}
-              {recipeData.ingredients && recipeData.ingredients.length && (
+              {recipeData.ingredients && recipeData.ingredients.length > 0 && (
                 <div className="mt-2">
                   <Collapses
                     title="Ingredients"
@@ -210,7 +269,7 @@ const RecipePage: NextPage = () => {
                   />
                 </div>
               )}
-              {recipeData.instructions && recipeData.instructions.length && (
+              {recipeData.instructions && recipeData.instructions.length > 0 && (
                 <div className="mt-2">
                   <Collapses
                     title="Instructions"
@@ -232,6 +291,16 @@ const RecipePage: NextPage = () => {
               )}
             </div>
           </div>
+        </div>
+      )}
+      {recipeNotExist && (
+        <div className="text-center mt-36 font-bold text-lg">
+          Recipe not found.
+        </div>
+      )}
+      {deleteFinished && (
+        <div className="text-center mt-36 font-bold text-lg">
+          This recipe has been deleted.
         </div>
       )}
     </>

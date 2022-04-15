@@ -12,13 +12,14 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { IoIosImages } from "react-icons/io";
 import { Oval } from "react-loader-spinner";
 import { Categories, List } from "..";
-import { client } from "../../client";
+import { client, urlFor } from "../../client";
 import { resetFeed } from "../../store/features/feedSlice";
 import { selectUser } from "../../store/features/userSlice";
 import { useAppDispatch, useAppSelector } from "../../store/store";
@@ -26,7 +27,7 @@ import {
   DuplicateRecipeBuilderData,
   RecipeBuilderData,
 } from "../../utils/data";
-// pass down prop id to list and categories
+
 interface RecipeBuilderProps {
   id: string;
   builderData: DuplicateRecipeBuilderData;
@@ -34,9 +35,10 @@ interface RecipeBuilderProps {
     afterId: string | null,
     data: DuplicateRecipeBuilderData
   ) => void;
-  deleteFn: (id: string) => void;
+  deleteFn?: (id: string) => void;
   showError: (text: string) => void;
   updateBuildersPreview?: (id: string, image: string) => void;
+  finishEditExistingRecipe?: () => void;
 }
 
 type RecipeDoc = RecipeBuilderData & {
@@ -61,7 +63,9 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   deleteFn,
   showError,
   updateBuildersPreview,
+  finishEditExistingRecipe,
 }) => {
+  const router = useRouter();
   // start recipe data state
   const [name, setName] = useState<string>(builderData?.name || "");
   const [ingredients, setIngredients] = useState<string[]>(
@@ -85,6 +89,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   const [showSpinner, setShowSpinner] = useState(false);
   const [isMissingFields, setIsMissingFields] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [createdId, setCreatedId] = useState("");
 
   const acceptedImgType = ["image/jpeg", "image/png", "image/webp"];
   const dispatch = useAppDispatch();
@@ -94,7 +99,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     }
   }, [image1]);
 
-  const createDoc = (image1?: any) => {
+  const createDoc = (cdnimage1?: any) => {
     const doc: RecipeDoc = {
       _type: "recipe",
       name,
@@ -103,35 +108,36 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       categories,
       servings,
       destination,
-      image2: image2 || "",
+      image2,
       byUser: {
         _type: "byUser",
         _ref: userId,
       },
     };
 
-    if (image1) {
+    if (cdnimage1) {
       doc.image1 = {
         _type: "image",
         asset: {
           _type: "reference",
-          _ref: image1._id,
+          _ref: cdnimage1._id,
         },
       };
     }
 
     client
       .create(doc)
-      .then(() => {
+      .then((data) => {
         setUploadSuccess(true);
         dispatch(resetFeed());
+        setCreatedId(data._id);
       })
-      .catch((error: { message: any }) => {
+      .catch((error) => {
         showError(
           "There was a problem uploading your recipe. Try again later."
         );
         setShowSpinner(false);
-        console.log("Upload failed:", error.message);
+        console.log("Upload failed:", error);
       });
   };
 
@@ -156,8 +162,8 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           .then((documentImg) => {
             createDoc(documentImg);
           })
-          .catch((error: { message: any }) => {
-            console.log("Upload failed:", error.message);
+          .catch((error) => {
+            console.log("Upload failed:", error);
             showError(
               "There was a problem uploading your recipe. Try again later."
             );
@@ -171,7 +177,79 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     }
   };
 
-  if (uploadSuccess) {
+  const createPatchEdit = (cdnimage1?: any) => {
+    const newData: RecipeBuilderData = {
+      name,
+      ingredients,
+      instructions,
+      categories,
+      servings,
+      destination,
+      image2,
+    };
+    if (cdnimage1) {
+      newData.image1 = {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: cdnimage1._id,
+        },
+      };
+    }
+    client
+      .patch(id)
+      .set(newData)
+      .commit()
+      .then(() => {
+        dispatch(resetFeed());
+        if (finishEditExistingRecipe) {
+          finishEditExistingRecipe();
+        }
+      })
+      .catch((error) => {
+        showError("There was a problem uploading your edits. Try again later.");
+        setShowSpinner(false);
+        console.log("Upload failed:", error);
+      });
+  };
+
+  const submitEdit = async () => {
+    setUpload(uploadState.ATTEMPT_UPLOADING);
+    setIsMissingFields(false);
+
+    if (
+      name &&
+      ingredients.length > 0 &&
+      instructions.length > 0 &&
+      (image1 || image2)
+    ) {
+      setShowSpinner(true);
+
+      if (image1?.type && acceptedImgType.includes(image1?.type)) {
+        client.assets
+          .upload("image", image1, {
+            contentType: image1.type,
+            filename: image1.name,
+          })
+          .then((documentImg) => {
+            createPatchEdit(documentImg);
+          })
+          .catch((error) => {
+            console.log("Upload failed:", error);
+            showError(
+              "There was a problem uploading your edits. Try again later."
+            );
+            setShowSpinner(false);
+          });
+      } else {
+        createPatchEdit();
+      }
+    } else {
+      setIsMissingFields(true);
+    }
+  };
+
+  if (uploadSuccess && deleteFn && createdId) {
     return (
       <div className="w-full relative bg-white p-5 rounded-xl shadow-sm flex justify-between gap-10">
         <div className="flex items-center gap-5 flex-1">
@@ -196,7 +274,12 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button borderRadius="3xl">See it</Button>
+          <Button
+            borderRadius="3xl"
+            onClick={() => router.push(`/recipe/${createdId}`)}
+          >
+            See it
+          </Button>
           <CloseButton
             borderRadius="full"
             size="sm"
@@ -225,54 +308,68 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       )}
       {/* edit and submit btn */}
       <div className="w-full flex justify-between items-center px-3 ">
-        <Menu autoSelect={false}>
-          <MenuButton
-            p="1"
-            className="grid place-items-center"
-            ml="-2"
-            borderRadius="full"
-            variant="ghost"
-            as={Button}
-          >
-            <BiDotsHorizontalRounded className="text-grey-icon text-2xl" />
-          </MenuButton>
-          <MenuList className="shadow-elevated " border="none" minWidth="none">
-            <MenuItem
-              onClick={() => {
-                deleteFn(id);
-              }}
-              pr="16"
-              fontWeight="bold"
-              _hover={{ bg: "bgGrey" }}
-            >
-              Delete
-            </MenuItem>
-            {duplicateFn && (
-              <MenuItem
-                onClick={() => {
-                  duplicateFn(id, {
-                    name,
-                    ingredients,
-                    instructions,
-                    categories,
-                    servings,
-                    image1,
-                    image2,
-                    destination,
-                  });
-                }}
-                pr="16"
-                fontWeight="bold"
-                _hover={{ bg: "bgGrey" }}
+        <div>
+          {deleteFn && (
+            <Menu autoSelect={false}>
+              <MenuButton
+                p="1"
+                className="grid place-items-center"
+                ml="-2"
+                borderRadius="full"
+                variant="ghost"
+                as={Button}
               >
-                Duplicate
-              </MenuItem>
-            )}
-          </MenuList>
-        </Menu>
-        <Button variant="primary" onClick={() => uploadRecipe()}>
-          Upload recipe
-        </Button>
+                <BiDotsHorizontalRounded className="text-grey-icon text-2xl" />
+              </MenuButton>
+              <MenuList
+                className="shadow-elevated "
+                border="none"
+                minWidth="none"
+              >
+                <MenuItem
+                  onClick={() => {
+                    deleteFn(id);
+                  }}
+                  pr="16"
+                  fontWeight="bold"
+                  _hover={{ bg: "bgGrey" }}
+                >
+                  Delete
+                </MenuItem>
+                {duplicateFn && (
+                  <MenuItem
+                    onClick={() => {
+                      duplicateFn(id, {
+                        name,
+                        ingredients,
+                        instructions,
+                        categories,
+                        servings,
+                        image1,
+                        image2,
+                        destination,
+                      });
+                    }}
+                    pr="16"
+                    fontWeight="bold"
+                    _hover={{ bg: "bgGrey" }}
+                  >
+                    Duplicate
+                  </MenuItem>
+                )}
+              </MenuList>
+            </Menu>
+          )}
+        </div>
+        {finishEditExistingRecipe ? (
+          <Button variant="primary" onClick={() => submitEdit()}>
+            Submit edit
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={() => uploadRecipe()}>
+            Upload recipe
+          </Button>
+        )}
       </div>
       {/* missing fields warning */}
       {isMissingFields && (
@@ -398,11 +495,19 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                 borderColor="borderGrey"
                 className="relative p-2 rounded-lg"
               >
-                <img
-                  src={image2 !== "" ? image2 : URL.createObjectURL(image1)}
-                  alt="uploaded-pic"
-                  className="h-full w-full object-contain rounded-lg"
-                />
+                <div className="rounded-lg bg-grey1">
+                  <img
+                    src={
+                      image2 !== ""
+                        ? image2
+                        : image1.asset
+                        ? urlFor(image1).url()
+                        : URL.createObjectURL(image1)
+                    }
+                    alt="uploaded-pic"
+                    className="h-full w-full object-contain rounded-lg"
+                  />
+                </div>
                 <Button
                   className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full p-1 shadow-2xl"
                   width="40px"
@@ -415,10 +520,10 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                   <FaTrash />
                 </Button>
               </Box>
-              {image2 && (
+              {image2 && !finishEditExistingRecipe && (
                 <p className="mt-3 text-grey-muted text-xs">
                   Note: image from this link might be of low quality. Please
-                  consider uploading your own photo.
+                  consider uploading your own image.
                 </p>
               )}
             </div>
