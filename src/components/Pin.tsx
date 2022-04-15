@@ -23,11 +23,11 @@ const Pin: React.FC<PinProps> = ({ data }) => {
   const router = useRouter();
 
   return (
-    <div className="mx-2 my-8">
+    <div className="mx-2 mt-3 mb-8">
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className=" relative cursor-zoom-in w-full rounded-lg overflow-hidden"
+        className=" relative cursor-zoom-in w-full rounded-lg overflow-hidden bg-grey1"
         onClick={() => router.push(`/recipe/${_id}`)}
       >
         {(image1 || image2) && (

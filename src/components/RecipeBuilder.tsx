@@ -11,11 +11,6 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
@@ -24,8 +19,9 @@ import { IoIosImages } from "react-icons/io";
 import { Oval } from "react-loader-spinner";
 import { Categories, List } from ".";
 import { client } from "../client";
+import { resetFeed } from "../store/features/feedSlice";
 import { selectUser } from "../store/features/userSlice";
-import { useAppSelector } from "../store/store";
+import { useAppDispatch, useAppSelector } from "../store/store";
 import { DuplicateRecipeBuilderData, RecipeBuilderData } from "../utils/data";
 // pass down prop id to list and categories
 interface RecipeBuilderProps {
@@ -74,9 +70,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   const [categories, setCategories] = useState<string[]>(
     builderData?.categories || []
   );
-  const [servings, setServings] = useState<string>(
-    builderData?.servings || "1"
-  );
+  const [servings, setServings] = useState<string>(builderData?.servings || "");
   const [image1, setImage1] = useState<any>(builderData?.image1 || null);
   const [image2, setImage2] = useState<string>(builderData?.image2 || "");
   const [destination, setDestination] = useState<string>(
@@ -90,7 +84,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const acceptedImgType = ["image/jpeg", "image/png", "image/webp"];
-
+  const dispatch = useAppDispatch();
   useEffect(() => {
     if (updateBuildersPreview) {
       updateBuildersPreview(id, image1 ? URL.createObjectURL(image1) : "");
@@ -127,7 +121,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       .create(doc)
       .then(() => {
         setUploadSuccess(true);
-        // router.push("/");
+        dispatch(resetFeed());
       })
       .catch((error: { message: any }) => {
         showError(
@@ -309,20 +303,19 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
         <div className="md:flex-1">
           {/* servings */}
           <div className="mt-8 flex items-center">
-            <span className="mr-2 font-bold">Serves</span>
-            <NumberInput
+            <span className="mr-2 font-bold">Servings: </span>
+            <Input
+              variant="outline"
               size="sm"
-              maxW={16}
-              defaultValue={servings}
-              min={1}
-              onChange={(valueAsString) => setServings(valueAsString)}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper color="placeholderGrey" />
-                <NumberDecrementStepper color="placeholderGrey" />
-              </NumberInputStepper>
-            </NumberInput>
+              type="text"
+              value={servings}
+              onChange={(e) => {
+                setServings(e.target.value);
+              }}
+              borderColor="borderGrey"
+              bg="white"
+              _hover={{ bg: "white" }}
+            />
           </div>
           {/* categories */}
           <div className="mt-7">

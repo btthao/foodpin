@@ -116,7 +116,7 @@ const List: React.FC<ListProps> = ({ name, list, updateList, upload }) => {
         ))}
       </ul>
       {/* add new item */}
-      <div className="flex gap-3 mt-1">
+      <div className="relative flex gap-3 mt-1">
         <Input
           variant="flushed"
           size="sm"
@@ -128,11 +128,13 @@ const List: React.FC<ListProps> = ({ name, list, updateList, upload }) => {
             if (e.key === "Enter") addItem();
           }}
           isInvalid={upload === uploadState.ATTEMPT_UPLOADING && !list.length}
+          pr="35px"
         />
-
-        <Button size="sm" px="0" bg="none" onClick={() => addItem()}>
-          <IoIosAddCircleOutline className="text-xl" />
-        </Button>
+        <div className="absolute right-0 bottom-0">
+          <Button size="sm" px="0" bg="none" onClick={() => addItem()}>
+            <IoIosAddCircleOutline className="text-xl" />
+          </Button>
+        </div>
       </div>
     </div>
   );

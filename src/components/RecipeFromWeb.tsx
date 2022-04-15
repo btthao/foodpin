@@ -8,7 +8,10 @@ interface RecipeFromWebProps {
   showError: (text: string) => void;
 }
 
-const isValidList = (list: any[]) => {
+const isValidList = (list: any) => {
+  if (!Array.isArray(list)) {
+    return false;
+  }
   for (const item of list) {
     if (!item) return false;
   }

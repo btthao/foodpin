@@ -47,10 +47,14 @@ export const feedSlice = createSlice({
         state.mainFeed = updatedMainFeed;
       }
     },
+    resetFeed: (state) => {
+      state.mainFeed = [];
+      state.searchFeed = [];
+    },
   },
 });
 
-export const { setFeedData, updateSaveStatus } = feedSlice.actions;
+export const { setFeedData, updateSaveStatus, resetFeed } = feedSlice.actions;
 
 export const selectFeed = (state: RootState) => state.feed;
 
