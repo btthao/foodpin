@@ -4,11 +4,11 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { BiLink } from "react-icons/bi";
 import { FiArrowUpRight } from "react-icons/fi";
-import { urlFor } from "../client";
-import { selectUser } from "../store/features/userSlice";
-import { useAppSelector } from "../store/store";
-import { RecipeData } from "../utils/data";
-import { copyUrlToClipboard } from "../utils/helpers";
+import { urlFor } from "../../client";
+import { selectUser } from "../../store/features/userSlice";
+import { useAppSelector } from "../../store/store";
+import { RecipeData } from "../../utils/data";
+import { copyUrlToClipboard } from "../../utils/helpers";
 import SaveRecipe from "./SaveRecipe";
 
 interface PinProps {

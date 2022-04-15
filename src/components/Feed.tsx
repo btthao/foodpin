@@ -1,6 +1,6 @@
 import Masonry from "react-masonry-css";
 import { RecipeData } from "../utils/data";
-import Pin from "./Pin";
+import Pin from "./recipe/Pin";
 
 interface FeedProps {
   data: RecipeData[];

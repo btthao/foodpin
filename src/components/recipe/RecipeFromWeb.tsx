@@ -1,7 +1,7 @@
 import { Button, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { DuplicateRecipeBuilderData } from "../utils/data";
+import { DuplicateRecipeBuilderData } from "../../utils/data";
 import RecipeBuilder from "./RecipeBuilder";
 
 interface RecipeFromWebProps {

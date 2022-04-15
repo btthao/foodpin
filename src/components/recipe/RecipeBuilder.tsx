@@ -17,12 +17,15 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { IoIosImages } from "react-icons/io";
 import { Oval } from "react-loader-spinner";
-import { Categories, List } from ".";
-import { client } from "../client";
-import { resetFeed } from "../store/features/feedSlice";
-import { selectUser } from "../store/features/userSlice";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { DuplicateRecipeBuilderData, RecipeBuilderData } from "../utils/data";
+import { Categories, List } from "..";
+import { client } from "../../client";
+import { resetFeed } from "../../store/features/feedSlice";
+import { selectUser } from "../../store/features/userSlice";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import {
+  DuplicateRecipeBuilderData,
+  RecipeBuilderData,
+} from "../../utils/data";
 // pass down prop id to list and categories
 interface RecipeBuilderProps {
   id: string;

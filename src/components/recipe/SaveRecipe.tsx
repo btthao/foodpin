@@ -1,9 +1,9 @@
 import { Button, useToast } from "@chakra-ui/react";
 import { useState } from "react";
-import { client } from "../client";
+import { client } from "../../client";
 import { v4 as uuidv4 } from "uuid";
-import { useAppDispatch } from "../store/store";
-import { updateSaveStatus } from "../store/features/feedSlice";
+import { useAppDispatch } from "../../store/store";
+import { updateSaveStatus } from "../../store/features/feedSlice";
 
 interface SaveRecipeProps {
   recipeId: string;

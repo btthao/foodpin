@@ -11,9 +11,9 @@ import {
 import React from "react";
 import GoogleLogin, { GoogleLoginResponse } from "react-google-login";
 import { FcGoogle } from "react-icons/fc";
-import { client } from "../client";
-import { login } from "../store/features/userSlice";
-import { useAppDispatch } from "../store/store";
+import { client } from "../../client";
+import { login } from "../../store/features/userSlice";
+import { useAppDispatch } from "../../store/store";
 
 const LoginModal: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

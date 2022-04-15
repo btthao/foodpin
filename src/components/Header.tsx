@@ -6,9 +6,7 @@ import { GoogleLoginResponse } from "react-google-login";
 import { IoIosAddCircle, IoIosNotifications } from "react-icons/io";
 import { login, logout, selectUser } from "../store/features/userSlice";
 import { useAppDispatch, useAppSelector } from "../store/store";
-import Avatar from "./Avatar";
-import LoginModal from "./LoginModal";
-import Search from "./Search";
+import { Search, LoginModal, Avatar } from ".";
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();

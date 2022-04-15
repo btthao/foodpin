@@ -5,7 +5,7 @@ import { BsImage } from "react-icons/bs";
 import { GrAdd } from "react-icons/gr";
 import { v4 as uuidv4 } from "uuid";
 import { DuplicateRecipeBuilderData } from "../utils/data";
-import RecipeBuilder from "./RecipeBuilder";
+import { RecipeBuilder } from "../components";
 
 interface BuildersStackProps {
   showError: (text: string) => void;
