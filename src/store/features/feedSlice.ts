@@ -26,10 +26,31 @@ export const feedSlice = createSlice({
         state.searchFeed = action.payload.data;
       }
     },
+    updateSaveStatus: (
+      state,
+      action: PayloadAction<{ _id: string; save: any[] }>
+    ) => {
+      const updatedMainFeed = [...state.mainFeed];
+      let idx = -1;
+      for (let i = 0; i < updatedMainFeed.length; i++) {
+        if (updatedMainFeed[i]._id === action.payload._id) {
+          idx = i;
+          break;
+        }
+      }
+
+      if (idx >= 0) {
+        updatedMainFeed[idx] = {
+          ...updatedMainFeed[idx],
+          save: action.payload.save,
+        };
+        state.mainFeed = updatedMainFeed;
+      }
+    },
   },
 });
 
-export const { setFeedData } = feedSlice.actions;
+export const { setFeedData, updateSaveStatus } = feedSlice.actions;
 
 export const selectFeed = (state: RootState) => state.feed;
 

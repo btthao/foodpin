@@ -17,6 +17,14 @@ const theme = extendTheme({
           _hover: {
             bg: "red.600",
           },
+          _loading: {
+            bg: "red.500",
+            opacity: "100",
+            _hover: {
+              bg: "red.500",
+              opacity: "100",
+            },
+          },
         },
         solid: {
           fontWeight: "bold",

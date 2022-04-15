@@ -2,6 +2,8 @@ import { Button, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { client } from "../client";
 import { v4 as uuidv4 } from "uuid";
+import { useAppDispatch } from "../store/store";
+import { updateSaveStatus } from "../store/features/feedSlice";
 
 interface SaveRecipeProps {
   recipeId: string;
@@ -12,19 +14,29 @@ interface SaveRecipeProps {
 const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
   const [savedByCurrentUser, setSavedByCurrentUser] = useState(saved);
   const toast = useToast();
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
   return (
     <>
       {savedByCurrentUser ? (
         <Button
+          isLoading={loading}
           onClick={(e) => {
             e.stopPropagation();
-            setSavedByCurrentUser(false);
+            setLoading(true);
             client
               .patch(recipeId)
               .unset([`save[userId=="${userId}"]`])
               .commit()
+              .then((doc) => {
+                setLoading(false);
+                setSavedByCurrentUser(false);
+                dispatch(updateSaveStatus({ _id: recipeId, save: doc.save }));
+              })
               .catch((err) => {
+                setLoading(false);
                 setSavedByCurrentUser(true);
+                toast.closeAll();
                 toast({
                   title: "Something went wrong. Try again later!",
                   status: "error",
@@ -38,6 +50,7 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
           color="white"
           _hover={{ bg: "black", color: "white" }}
           _active={{ bg: "black", color: "white" }}
+          _loading={{ opacity: "100" }}
           borderRadius="3xl"
           py="6"
         >
@@ -45,9 +58,10 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
         </Button>
       ) : (
         <Button
+          isLoading={loading}
           onClick={(e) => {
             e.stopPropagation();
-            setSavedByCurrentUser(true);
+            setLoading(true);
             client
               .patch(recipeId)
               .setIfMissing({ save: [] })
@@ -62,8 +76,15 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
                 },
               ])
               .commit()
+              .then((doc) => {
+                setLoading(false);
+                setSavedByCurrentUser(true);
+                dispatch(updateSaveStatus({ _id: recipeId, save: doc.save }));
+              })
               .catch((err) => {
+                setLoading(false);
                 setSavedByCurrentUser(false);
+                toast.closeAll();
                 toast({
                   title: "Something went wrong. Try again later!",
                   status: "error",

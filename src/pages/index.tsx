@@ -38,6 +38,7 @@ const Home: NextPage = () => {
         .catch((err) => {
           console.error(err);
           progress.finish();
+          toast.closeAll();
           toast({
             title: "Something went wrong. Try again later.",
             status: "error",
