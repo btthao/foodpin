@@ -10,3 +10,5 @@ export { default as RecipeFromWeb } from "./RecipeFromWeb";
 export { default as BuildersStack } from "./BuildersStack";
 export { default as Feed } from "./Feed";
 export { default as Pin } from "./Pin";
+export { default as Collapses } from "./Collapses";
+export { default as SaveRecipe } from "./SaveRecipe";

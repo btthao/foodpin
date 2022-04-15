@@ -12,7 +12,7 @@ import { useState } from "react";
 interface CategoriesProps {
   id: string;
   categories: string[];
-  setCategories: Function;
+  setCategories?: Function;
 }
 
 const Categories: React.FC<CategoriesProps> = ({
@@ -25,21 +25,25 @@ const Categories: React.FC<CategoriesProps> = ({
   const [isError, setIsError] = useState(false);
 
   const updateCategories = () => {
-    if (categories.includes(newCategory.toLowerCase())) {
-      setIsError(true);
-    } else {
-      if (newCategory !== "") {
-        setCategories([...categories, newCategory.toLowerCase()]);
+    if (setCategories) {
+      if (categories.includes(newCategory.toLowerCase())) {
+        setIsError(true);
+      } else {
+        if (newCategory !== "") {
+          setCategories([...categories, newCategory.toLowerCase()]);
+        }
+        setNewCategory("");
+        setAddNewCategory(false);
       }
-      setNewCategory("");
-      setAddNewCategory(false);
     }
   };
   const removeCategory = (cat: string, idx: number) => {
-    const newCategories = categories.filter(
-      (name, i) => i !== idx && name !== cat
-    );
-    setCategories(newCategories);
+    if (setCategories) {
+      const newCategories = categories.filter(
+        (name, i) => i !== idx && name !== cat
+      );
+      setCategories(newCategories);
+    }
   };
 
   return (
@@ -54,11 +58,12 @@ const Categories: React.FC<CategoriesProps> = ({
           py="2"
           px="3"
         >
-          <TagLabel>{cat}</TagLabel>
-          <TagCloseButton ml="3" onClick={() => removeCategory(cat, idx)} />
+          <TagLabel textTransform="capitalize">{cat}</TagLabel>
+          {setCategories && (
+            <TagCloseButton ml="3" onClick={() => removeCategory(cat, idx)} />
+          )}
         </Tag>
       ))}
-
       {addNewCategory ? (
         <ScaleFade initialScale={0.9} in={true}>
           <FormControl className="relative" isInvalid={isError}>
@@ -87,7 +92,7 @@ const Categories: React.FC<CategoriesProps> = ({
             )}
           </FormControl>
         </ScaleFade>
-      ) : (
+      ) : setCategories ? (
         <Tag
           key={`${id}-new-cat`}
           variant="solid"
@@ -107,7 +112,7 @@ const Categories: React.FC<CategoriesProps> = ({
         >
           <TagLabel>Add category</TagLabel>
         </Tag>
-      )}
+      ) : null}
     </div>
   );
 };

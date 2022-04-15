@@ -1,0 +1,241 @@
+import ProgressBar from "@badrap/bar-of-progress";
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  useToast,
+} from "@chakra-ui/react";
+import type { NextPage } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { FaLink } from "react-icons/fa";
+import { ImSpoonKnife } from "react-icons/im";
+import { client, urlFor } from "../../client";
+import { Categories, Collapses, SaveRecipe } from "../../components";
+import { selectUser } from "../../store/features/userSlice";
+import { useAppSelector } from "../../store/store";
+import { RecipeData, recipeQuery } from "../../utils/data";
+import { copyUrlToClipboard } from "../../utils/helpers";
+
+const RecipePage: NextPage = () => {
+  const router = useRouter();
+  const recipeId = router.query?.id ? (router.query.id as string) : null;
+  const [recipeData, setRecipeData] = useState<RecipeData | null>(null);
+  const { id: currentUserId, username: currentUserName } =
+    useAppSelector(selectUser);
+  const progress = new ProgressBar({
+    size: 4,
+    color: "#6fb96f",
+    delay: 0,
+  });
+
+  const toast = useToast();
+
+  useEffect(() => {
+    if (recipeId) {
+      progress.start();
+
+      const query = recipeQuery(recipeId);
+
+      client
+        .fetch(query)
+        .then((data) => {
+          console.log(data);
+          setRecipeData(data[0]);
+          progress.finish();
+        })
+        .catch((err) => {
+          console.error(err);
+          progress.finish();
+          toast.closeAll();
+          toast({
+            title: "Something went wrong. Try again later.",
+            status: "error",
+            duration: null,
+            isClosable: true,
+          });
+        });
+    }
+  }, [recipeId]);
+
+  return (
+    <>
+      {recipeData && (
+        <div className=" max-w-xl lg:max-w-5xl mx-auto py-4">
+          <div className="flex flex-col lg:flex-row lg:p-4 bg-white shadow-elevated rounded-3xl overflow-hidden">
+            <div className="lg:flex-1 bg-grey1 rounded-3xl overflow-hidden h-fit">
+              <img
+                className="w-full rounded-3xl"
+                src={
+                  recipeData.image1
+                    ? urlFor(recipeData.image1).url()
+                    : recipeData.image2
+                }
+                alt={recipeData.name}
+              />
+            </div>
+            <div className="lg:flex-1 p-5 flex flex-col gap-2">
+              <div className="flex justify-between items-center ">
+                <div className="flex gap-2">
+                  <Menu autoSelect={false}>
+                    <MenuButton
+                      p="0"
+                      width="44px"
+                      height="44px"
+                      borderRadius="full"
+                      variant="ghost"
+                      className="grid place-items-center"
+                      ml="-2"
+                      as={Button}
+                    >
+                      <BiDotsHorizontalRounded className=" text-2xl" />
+                    </MenuButton>
+                    <MenuList
+                      className="shadow-elevated "
+                      border="none"
+                      minWidth="none"
+                    >
+                      {recipeData.destination && (
+                        <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
+                          <a target="_blank" href={recipeData.destination}>
+                            View destination
+                          </a>
+                        </MenuItem>
+                      )}
+                      <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
+                        <a
+                          target="_blank"
+                          href={
+                            recipeData.image1
+                              ? urlFor(recipeData.image1).url()
+                              : recipeData.image2
+                          }
+                        >
+                          View image
+                        </a>
+                      </MenuItem>
+                      {recipeData.byUser._id === currentUserId && (
+                        <>
+                          <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
+                            Edit recipe
+                          </MenuItem>
+                          <MenuItem fontWeight="bold" _hover={{ bg: "bgGrey" }}>
+                            Delete recipe
+                          </MenuItem>
+                        </>
+                      )}
+                    </MenuList>
+                  </Menu>
+                  <Button
+                    p="0"
+                    width="44px"
+                    height="44px"
+                    borderRadius="full"
+                    variant="ghost"
+                    onClick={() => {
+                      copyUrlToClipboard(recipeData._id);
+                      toast.closeAll();
+                      toast({
+                        title: "Copied to clipboard",
+                        status: "success",
+                        duration: 1200,
+                        isClosable: true,
+                      });
+                    }}
+                  >
+                    <FaLink className="text-lg transform rotate-45" />
+                  </Button>
+                </div>
+                <SaveRecipe
+                  userId={currentUserId}
+                  recipeId={recipeData._id}
+                  saved={
+                    recipeData.save && recipeData.save.length
+                      ? recipeData.save.filter(
+                          (savedBy) => savedBy.userId === currentUserId
+                        ).length === 1
+                      : false
+                  }
+                />
+              </div>
+              <div className="text-lg sm:text-xl">
+                <span>Uploaded by </span>
+                <span className="font-bold">
+                  <Link href={`/${recipeData?.byUser._id}`}>
+                    <a>
+                      {recipeData.byUser._id === currentUserId
+                        ? "you"
+                        : recipeData.byUser.userName}
+                    </a>
+                  </Link>
+                </span>
+              </div>
+              <h1 className="mt-4 text-3xl sm:text-4xl font-bold">
+                {recipeData.name}
+              </h1>
+
+              {recipeData.categories && recipeData.categories.length && (
+                <div className="mt-1">
+                  <Categories
+                    id={recipeData._id}
+                    categories={recipeData.categories}
+                  />
+                </div>
+              )}
+              {recipeData.servings && (
+                <div className="flex items-center mt-4">
+                  <span className="mr-2 bg-gray-800 p-[0.4rem] rounded-full text-sm  text-white">
+                    <ImSpoonKnife />
+                  </span>
+                  Servings: {recipeData.servings}
+                </div>
+              )}
+              {recipeData.ingredients && recipeData.ingredients.length && (
+                <div className="mt-2">
+                  <Collapses
+                    title="Ingredients"
+                    content={
+                      <ul className="text-sm">
+                        {recipeData.ingredients.map((ingredient, idx) => (
+                          <li key={`${recipeData._id}-${ingredient}-${idx}`}>
+                            {ingredient}
+                          </li>
+                        ))}
+                      </ul>
+                    }
+                  />
+                </div>
+              )}
+              {recipeData.instructions && recipeData.instructions.length && (
+                <div className="mt-2">
+                  <Collapses
+                    title="Instructions"
+                    content={
+                      <ul className="text-sm">
+                        {recipeData.instructions.map((instruction, idx) => (
+                          <li
+                            className="mb-3"
+                            key={`${recipeData._id}-${instruction}-${idx}`}
+                          >
+                            <h6 className="font-bold">Step {idx + 1}</h6>
+                            <p>{instruction}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    }
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default RecipePage;
