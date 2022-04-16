@@ -3,14 +3,13 @@ import { Avatar as ChakraAvatar } from "@chakra-ui/react";
 interface AvatarProps {
   name: string;
   src: string;
+  size?: string;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ name, src }) => {
+const Avatar: React.FC<AvatarProps> = ({ name, src, size }) => {
   return (
     <ChakraAvatar
-      size="sm"
-      width="26px"
-      height="26px"
+      size={size || "sm"}
       name={name.replace(" ", "-")}
       src={src}
       bg="bgGrey"

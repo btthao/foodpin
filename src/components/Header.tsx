@@ -103,19 +103,10 @@ const Header: React.FC = () => {
                 height="44px"
                 borderRadius="full"
                 variant="ghost"
-              >
-                <IoIosNotifications className="text-3xl text-grey-icon" />
-              </Button>
-              <Button
-                p="0"
-                width="44px"
-                height="44px"
-                borderRadius="full"
-                variant="ghost"
                 mx="2"
                 onClick={() => router.push("/new-recipe")}
               >
-                <IoIosAddCircle className="text-3xl text-grey-icon" />
+                <IoIosAddCircle className="text-[36px] text-grey-icon" />
               </Button>
               <Menu autoSelect={false}>
                 <MenuButton
