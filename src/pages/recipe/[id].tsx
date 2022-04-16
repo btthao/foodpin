@@ -35,7 +35,7 @@ const RecipePage: NextPage = () => {
     useAppSelector(selectUser);
   const progress = new ProgressBar({
     size: 4,
-    color: "#6fb96f",
+    color: "#87ce7e",
     delay: 0,
   });
 

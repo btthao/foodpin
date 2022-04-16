@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   const { mainFeed } = useAppSelector(selectFeed);
   const progress = new ProgressBar({
     size: 4,
-    color: "#6fb96f",
+    color: "#87ce7e",
     delay: 0,
   });
   const [loading, setLoading] = useState(false);

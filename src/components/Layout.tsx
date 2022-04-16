@@ -1,9 +1,16 @@
-import { Container } from "@chakra-ui/react";
+import { Container, useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { Header } from ".";
 
 const Layout: React.FC = ({ children }) => {
   const router = useRouter();
+  const toast = useToast();
+
+  useEffect(() => {
+    toast.closeAll();
+  }, [router.pathname]);
+
   return (
     <Container
       maxW="none"

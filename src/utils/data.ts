@@ -62,7 +62,7 @@ export const feedQuery = `*[_type == "recipe"] {
     } `;
 
 export const recipeQuery = (id: string) => {
-  return `*[_type == "recipe" && _id == '${id}'] {
+  return `*[_type == 'recipe' && _id == '${id}'] {
       _id,
       name,
       ingredients,
@@ -93,6 +93,34 @@ export const recipeQuery = (id: string) => {
       comments[]{
         _key,
         comment,
+        byUser->{
+          _id,
+          userName,
+          image
+        },
+      },
+    } `;
+};
+
+export const searchFeedQuery = (query: string) => {
+  return `*[_type == 'recipe' && name match '${query}*' || categories match '${query}*' || ingredients match '${query}*' || instructions match '${query}*']{
+        _id,
+      name,
+      image1{
+        asset->{
+          url
+        }
+      },
+      image2,
+      destination,
+      byUser->{
+        _id,
+        userName,
+        image
+      },
+      save[]{
+        _key,
+        userId,
         byUser->{
           _id,
           userName,
