@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RecipeData } from "../../utils/data";
 import { RootState } from "../store";
+import produce from "immer";
 
 export interface FeedState {
   mainFeed: RecipeData[];
@@ -30,22 +31,17 @@ export const feedSlice = createSlice({
       state,
       action: PayloadAction<{ _id: string; save: any[] }>
     ) => {
-      const updatedMainFeed = [...state.mainFeed];
-      let idx = -1;
-      for (let i = 0; i < updatedMainFeed.length; i++) {
-        if (updatedMainFeed[i]._id === action.payload._id) {
-          idx = i;
-          break;
-        }
-      }
-
-      if (idx >= 0) {
-        updatedMainFeed[idx] = {
-          ...updatedMainFeed[idx],
-          save: action.payload.save,
-        };
-        state.mainFeed = updatedMainFeed;
-      }
+      const changeSaveStatus = (feed: RecipeData[]) => {
+        return produce(feed, (draft) => {
+          for (let i = 0; i < feed.length; i++) {
+            if (feed[i]._id === action.payload._id) {
+              draft[i] = { ...feed[i], save: action.payload.save };
+            }
+          }
+        });
+      };
+      state.mainFeed = changeSaveStatus(state.mainFeed);
+      state.searchFeed = changeSaveStatus(state.searchFeed);
     },
     resetFeed: (state) => {
       state.mainFeed = [];
