@@ -22,10 +22,18 @@ export type RecipeBuilderData = RequireAtLeastOne<
 
 export type DuplicateRecipeBuilderData = Partial<RecipeBuilderData>;
 
+export type RecipeRef = {
+  _key: string;
+  recipeId: string;
+  recipeRef: RecipeData;
+};
+
 export type User = {
   _id: string;
   userName: string;
   image: string;
+  createdList: RecipeRef[] | null;
+  saveList: RecipeRef[] | null;
 };
 
 export type RecipeData = RecipeBuilderData & {
@@ -128,4 +136,70 @@ export const searchFeedQuery = (query: string) => {
         },
       },
     } `;
+};
+
+export const userQuery = (userId: string) => {
+  return `*[_type == "user" && _id == '${userId}'] {
+    _id,
+    userName,
+    image,
+    saveList[]{
+      _key,
+      recipeId,
+      recipeRef->{
+        _id,
+        name,
+        image1{
+          asset->{
+            url
+          }
+        },
+        image2,
+        destination,
+        byUser->{
+          _id,
+          userName,
+          image
+        },
+        save[]{
+          _key,
+          userId,
+          byUser->{
+            _id,
+            userName,
+            image
+          },
+        },
+      },
+    },
+    createdList[]{
+      _key,
+      recipeId,
+      recipeRef->{
+        _id,
+        name,
+        image1{
+          asset->{
+            url
+          }
+        },
+        image2,
+        destination,
+        byUser->{
+          _id,
+          userName,
+          image
+        },
+        save[]{
+          _key,
+          userId,
+          byUser->{
+            _id,
+            userName,
+            image
+          },
+        },
+      },
+    },
+  }`;
 };
