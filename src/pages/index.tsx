@@ -49,7 +49,7 @@ const Home: NextPage = () => {
     }
   }, []);
 
-  return <div>{!loading && mainFeed.length && <Feed data={mainFeed} />}</div>;
+  return <div>{!loading && mainFeed.length > 0 && <Feed data={mainFeed} />}</div>;
 };
 
 export default Home;

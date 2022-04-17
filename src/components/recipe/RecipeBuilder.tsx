@@ -23,6 +23,7 @@ import { client, urlFor } from "../../client";
 import { resetFeed } from "../../store/features/feedSlice";
 import { selectUser } from "../../store/features/userSlice";
 import { useAppDispatch, useAppSelector } from "../../store/store";
+import { v4 as uuidv4 } from "uuid";
 import {
   DuplicateRecipeBuilderData,
   RecipeBuilderData,
@@ -42,10 +43,12 @@ interface RecipeBuilderProps {
 }
 
 type RecipeDoc = RecipeBuilderData & {
+  _id: string;
   _type: string;
   byUser: {
     _type: string;
     _ref: string;
+    _weak: boolean;
   };
 };
 
@@ -89,7 +92,6 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   const [showSpinner, setShowSpinner] = useState(false);
   const [isMissingFields, setIsMissingFields] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [createdId, setCreatedId] = useState("");
 
   const acceptedImgType = ["image/jpeg", "image/png", "image/webp"];
   const dispatch = useAppDispatch();
@@ -102,6 +104,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   const createDoc = (cdnimage1?: any) => {
     const doc: RecipeDoc = {
       _type: "recipe",
+      _id: id,
       name,
       ingredients,
       instructions,
@@ -112,6 +115,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       byUser: {
         _type: "byUser",
         _ref: userId,
+        _weak: true,
       },
     };
 
@@ -126,11 +130,25 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     }
 
     client
+      .transaction()
       .create(doc)
-      .then((data) => {
+      .patch(userId, (p) =>
+        p.setIfMissing({ createdList: [] }).insert("after", "createdList[-1]", [
+          {
+            _key: uuidv4(),
+            recipeId: id,
+            recipeRef: {
+              _type: "recipeRef",
+              _ref: id,
+              _weak: true,
+            },
+          },
+        ])
+      )
+      .commit()
+      .then(() => {
         setUploadSuccess(true);
         dispatch(resetFeed());
-        setCreatedId(data._id);
       })
       .catch((error) => {
         showError(
@@ -249,7 +267,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     }
   };
 
-  if (uploadSuccess && deleteFn && createdId) {
+  if (uploadSuccess && deleteFn) {
     return (
       <div className="w-full relative bg-white p-5 rounded-xl shadow-sm flex justify-between gap-10">
         <div className="flex items-center gap-5 flex-1">
@@ -276,7 +294,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
         <div className="flex items-center gap-2">
           <Button
             borderRadius="3xl"
-            onClick={() => router.push(`/recipe/${createdId}`)}
+            onClick={() => router.push(`/recipe/${id}`)}
           >
             See it
           </Button>

@@ -50,7 +50,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({
       >
         <ModalOverlay />
         <ModalContent maxW="none" width="fit-content" p="0">
-          <div className="max-w-4xl mx-auto ">
+          <div className="max-w-4xl mx-auto w-screen ">
             {errorMessage && (
               <Alert
                 className="fixed top-0 left-0 z-[1000]"

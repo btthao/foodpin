@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { DuplicateRecipeBuilderData } from "../../utils/data";
 import RecipeBuilder from "./RecipeBuilder";
+import { v4 as uuidv4 } from "uuid";
 
 interface RecipeFromWebProps {
   showError: (text: string) => void;
@@ -113,8 +114,7 @@ const RecipeFromWeb: React.FC<RecipeFromWebProps> = ({ showError }) => {
         </div>
       ) : (
         <RecipeBuilder
-          key="webscrapebuilder"
-          id="webBuilder"
+          id={uuidv4()}
           builderData={recipeInfo}
           deleteFn={() => setRecipeInfo(null)}
           showError={showError}
