@@ -18,7 +18,7 @@ const Layout: React.FC = ({ children }) => {
       p="0"
       m="0"
       bg={`${router.asPath.includes("new-recipe") ? "bgGrey" : "white"}`}
-      className=" min-h-screen h-full "
+      className=" h-full "
     >
       <Header />
       <div className="relative mt-20">{children}</div>

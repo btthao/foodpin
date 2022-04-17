@@ -77,14 +77,12 @@ const UserPage: NextPage = ({}) => {
             {list === "Created" ? (
               <UserList
                 key={userId + "-created"}
-                userId={userData._id}
-                recipes={userData.createdList}
+                recipes={userData.createdList?.length ? userData.createdList.filter(recipe => recipe.recipeRef) : null}
               />
             ) : (
               <UserList
                 key={userId + "-saved"}
-                userId={userData._id}
-                recipes={userData.saveList}
+                recipes={userData.saveList?.length ? userData.saveList.filter(recipe => recipe.recipeRef) : null}
               />
             )}
           </div>
