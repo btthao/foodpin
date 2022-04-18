@@ -4,6 +4,7 @@ import { client } from "../../client";
 import { v4 as uuidv4 } from "uuid";
 import { useAppDispatch } from "../../store/store";
 import { updateSaveStatus } from "../../store/features/feedSlice";
+import LoginModal from "../user/LoginModal";
 
 interface SaveRecipeProps {
   recipeId: string;
@@ -18,17 +19,14 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
   const [loading, setLoading] = useState(false);
   if (!userId) {
     return (
-      <Button
-        onClick={(e) => {
-          e.stopPropagation();
-          // trigger login modal
+      <LoginModal
+        btnProps={{
+          variant: "primary",
+          borderRadius: "3xl",
+          py: "6",
         }}
-        variant="primary"
-        borderRadius="3xl"
-        py="6"
-      >
-        Save
-      </Button>
+        btnText="Save"
+      />
     );
   }
   return (

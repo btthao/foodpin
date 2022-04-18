@@ -8,13 +8,19 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
+import Image from "next/image";
 import React from "react";
 import GoogleLogin, { GoogleLoginResponse } from "react-google-login";
 import { FcGoogle } from "react-icons/fc";
 import { login } from "../../store/features/userSlice";
 import { useAppDispatch } from "../../store/store";
 
-const LoginModal: React.FC = () => {
+interface LoginModalProps {
+  btnProps: Record<string, any>;
+  btnText: string;
+}
+
+const LoginModal: React.FC<LoginModalProps> = ({ btnProps, btnText }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useAppDispatch();
 
@@ -30,17 +36,13 @@ const LoginModal: React.FC = () => {
   return (
     <>
       <Button
-        onClick={onOpen}
-        variant="dark"
-        borderRadius="3xl"
-        fontWeight="bold"
-        fontSize={{
-          md: "large",
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen();
         }}
-        py="5"
-        px="4"
+        {...btnProps}
       >
-        Login
+        {btnText}
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} autoFocus={false}>
@@ -52,7 +54,14 @@ const LoginModal: React.FC = () => {
           <ModalCloseButton />
           <ModalBody>
             <div className="flex  justify-center flex-col items-center">
-              <div className="pb-8">logoo</div>
+              <div className="pb-8">
+                <Image
+                  src="/assets/logo.png"
+                  width={70}
+                  height={70}
+                  alt="logo"
+                />
+              </div>
               <GoogleLogin
                 clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}
                 render={(renderProps) => (
@@ -62,10 +71,16 @@ const LoginModal: React.FC = () => {
                     borderRadius="3xl"
                     fontSize="lg"
                     pr="6"
-                    onClick={renderProps.onClick}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      renderProps.onClick();
+                    }}
                     disabled={renderProps.disabled}
                     _active={{
                       transform: "scale(0.96)",
+                    }}
+                    _hover={{
+                      bg: "hoverGrey",
                     }}
                   >
                     <FcGoogle className="mr-4" /> Continue with google

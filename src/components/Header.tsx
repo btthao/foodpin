@@ -84,7 +84,19 @@ const Header: React.FC = () => {
         {/* user space */}
         <div>
           {!currentUser ? (
-            <LoginModal />
+            <LoginModal
+              btnProps={{
+                variant: "dark",
+                borderRadius: "3xl",
+                fontWeight: "bold",
+                py: "5",
+                px: "4",
+                fontSize: {
+                  md: "large",
+                },
+              }}
+              btnText="Login"
+            />
           ) : (
             <div className="flex items-center">
               <Button
