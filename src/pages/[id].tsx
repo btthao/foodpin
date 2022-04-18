@@ -59,7 +59,7 @@ const UserPage: NextPage = ({}) => {
   return (
     <>
       {userData && (
-        <div className="w-full grid place-items-center mt-28">
+        <div className="w-full grid place-items-center mt-16">
           <div>
             <Avatar name={userData.userName} src={userData.image} size="xl" />
           </div>

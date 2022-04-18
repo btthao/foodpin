@@ -21,7 +21,7 @@ const Layout: React.FC = ({ children }) => {
       className="min-h-screen h-full"
     >
       <Header />
-      <div className="relative pt-20">{children}</div>
+      <div className="relative py-20">{children}</div>
     </Container>
   );
 };

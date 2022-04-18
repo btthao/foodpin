@@ -48,7 +48,6 @@ type RecipeDoc = RecipeBuilderData & {
   byUser: {
     _type: string;
     _ref: string;
-    _weak: boolean;
   };
 };
 
@@ -115,7 +114,6 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       byUser: {
         _type: "byUser",
         _ref: userId,
-        _weak: true,
       },
     };
 

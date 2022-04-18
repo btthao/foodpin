@@ -25,13 +25,18 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
             e.stopPropagation();
             setLoading(true);
             client
-              .patch(recipeId)
-              .unset([`save[userId=="${userId}"]`])
+              .transaction()
+              .patch(recipeId, (p) => p.unset([`save[userId=="${userId}"]`]))
+              .patch(userId, (p) =>
+                p.unset([`saveList[recipeId=="${recipeId}"]`])
+              )
               .commit()
-              .then((doc) => {
+              .then(() => {
                 setLoading(false);
                 setSavedByCurrentUser(false);
-                dispatch(updateSaveStatus({ _id: recipeId, save: doc.save }));
+                dispatch(
+                  updateSaveStatus({ _id: recipeId, userId, saved: false })
+                );
               })
               .catch((err) => {
                 setLoading(false);
@@ -63,23 +68,41 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
             e.stopPropagation();
             setLoading(true);
             client
-              .patch(recipeId)
-              .setIfMissing({ save: [] })
-              .insert("after", "save[-1]", [
-                {
-                  _key: uuidv4(),
-                  userId,
-                  byUser: {
-                    _type: "byUser",
-                    _ref: userId,
+              .transaction()
+              .patch(recipeId, (p) =>
+                p.setIfMissing({ save: [] }).insert("after", "save[-1]", [
+                  {
+                    _key: uuidv4(),
+                    userId,
+                    byUser: {
+                      _type: "byUser",
+                      _ref: userId,
+                    },
                   },
-                },
-              ])
+                ])
+              )
+              .patch(userId, (p) =>
+                p
+                  .setIfMissing({ saveList: [] })
+                  .insert("after", "saveList[-1]", [
+                    {
+                      _key: uuidv4(),
+                      recipeId,
+                      recipeRef: {
+                        _type: "recipeRef",
+                        _ref: recipeId,
+                        _weak: true,
+                      },
+                    },
+                  ])
+              )
               .commit()
-              .then((doc) => {
+              .then(() => {
                 setLoading(false);
                 setSavedByCurrentUser(true);
-                dispatch(updateSaveStatus({ _id: recipeId, save: doc.save }));
+                dispatch(
+                  updateSaveStatus({ _id: recipeId, userId, saved: true })
+                );
               })
               .catch((err) => {
                 setLoading(false);

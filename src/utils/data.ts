@@ -36,11 +36,17 @@ export type User = {
   saveList: RecipeRef[] | null;
 };
 
+export type Save = {
+  _key?: string;
+  userId: string;
+  byUser?: User;
+};
+
 export type RecipeData = RecipeBuilderData & {
   _id: string;
   byUser: User;
   comments: any[] | null;
-  save: any[] | null;
+  save: Save[] | null;
 };
 
 export const feedQuery = `*[_type == "recipe"] {

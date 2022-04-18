@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RecipeData } from "../../utils/data";
+import { RecipeData, Save } from "../../utils/data";
 import { RootState } from "../store";
 import produce from "immer";
 
@@ -29,13 +29,34 @@ export const feedSlice = createSlice({
     },
     updateSaveStatus: (
       state,
-      action: PayloadAction<{ _id: string; save: any[] }>
+      action: PayloadAction<{
+        _id: string;
+        userId: string;
+        saved: boolean;
+      }>
     ) => {
       const changeSaveStatus = (feed: RecipeData[]) => {
         return produce(feed, (draft) => {
           for (let i = 0; i < feed.length; i++) {
             if (feed[i]._id === action.payload._id) {
-              draft[i] = { ...feed[i], save: action.payload.save };
+              if (action.payload.saved) {
+                draft[i] = {
+                  ...feed[i],
+                  save: !feed[i].save
+                    ? [{ userId: action.payload.userId }]
+                    : [
+                        ...(feed[i].save as Save[]),
+                        { userId: action.payload.userId },
+                      ],
+                };
+              } else {
+                draft[i] = {
+                  ...feed[i],
+                  save: feed[i].save!.filter(
+                    (user) => user.userId !== action.payload.userId
+                  ),
+                };
+              }
             }
           }
         });
