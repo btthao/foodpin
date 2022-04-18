@@ -11,7 +11,6 @@ import {
 import React from "react";
 import GoogleLogin, { GoogleLoginResponse } from "react-google-login";
 import { FcGoogle } from "react-icons/fc";
-import { client } from "../../client";
 import { login } from "../../store/features/userSlice";
 import { useAppDispatch } from "../../store/store";
 
@@ -21,19 +20,8 @@ const LoginModal: React.FC = () => {
 
   const handleLogin = (response: any) => {
     const profileObj: GoogleLoginResponse["profileObj"] = response?.profileObj;
-
     if (profileObj) {
-      console.log(profileObj);
-      const { name, imageUrl, googleId } = profileObj;
-      const doc = {
-        _id: googleId,
-        _type: "user",
-        userName: name,
-        image: imageUrl,
-      };
-      localStorage.setItem("fp-user", JSON.stringify(profileObj));
-      client.createIfNotExists(doc);
-      dispatch(login({ username: name, image: imageUrl, id: googleId }));
+      dispatch(login(profileObj));
     }
   };
 

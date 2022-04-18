@@ -3,41 +3,31 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { GoogleLoginResponse } from "react-google-login";
-import { IoIosAddCircle, IoIosNotifications } from "react-icons/io";
+import { IoIosAddCircle } from "react-icons/io";
+import { Avatar, LoginModal, Search } from ".";
 import { login, logout, selectUser } from "../store/features/userSlice";
 import { useAppDispatch, useAppSelector } from "../store/store";
-import { Search, LoginModal, Avatar } from ".";
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { username, image, id } = useAppSelector(selectUser);
+  const { currentUser } = useAppSelector(selectUser);
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
   // check if user already exists in local storage
   useEffect(() => {
-    const loggedInUser: GoogleLoginResponse["profileObj"] | null =
+    const profileObj: GoogleLoginResponse["profileObj"] | null =
       localStorage.getItem("fp-user") !== "undefined"
         ? JSON.parse(localStorage.getItem("fp-user") as string)
         : null;
 
-    if (loggedInUser) {
-      dispatch(
-        login({
-          username: loggedInUser.name,
-          image: loggedInUser.imageUrl,
-          id: loggedInUser.googleId,
-        })
-      );
-    } else {
-      router.push("/");
+    if (profileObj) {
+      dispatch(login(profileObj));
     }
   }, []);
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("fp-user");
-    router.push("/");
   };
 
   const handleScroll = () => {
@@ -93,7 +83,7 @@ const Header: React.FC = () => {
         </div>
         {/* user space */}
         <div>
-          {!username ? (
+          {!currentUser ? (
             <LoginModal />
           ) : (
             <div className="flex items-center">
@@ -117,7 +107,7 @@ const Header: React.FC = () => {
                   variant="ghost"
                   as={Button}
                 >
-                  <Avatar name={username} src={image} />
+                  <Avatar name={currentUser.userName} src={currentUser.image} />
                 </MenuButton>
                 <MenuList
                   className="shadow-elevated"
@@ -128,7 +118,7 @@ const Header: React.FC = () => {
                     fontWeight="bold"
                     pr="20"
                     _hover={{ bg: "bgGrey" }}
-                    onClick={() => router.push(`/${id}`)}
+                    onClick={() => router.push(`/${currentUser._id}`)}
                   >
                     My profile
                   </MenuItem>

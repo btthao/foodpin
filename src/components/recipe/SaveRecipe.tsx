@@ -7,7 +7,7 @@ import { updateSaveStatus } from "../../store/features/feedSlice";
 
 interface SaveRecipeProps {
   recipeId: string;
-  userId: string;
+  userId?: string;
   saved: boolean;
 }
 
@@ -16,6 +16,21 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
   const toast = useToast();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
+  if (!userId) {
+    return (
+      <Button
+        onClick={(e) => {
+          e.stopPropagation();
+          // trigger login modal
+        }}
+        variant="primary"
+        borderRadius="3xl"
+        py="6"
+      >
+        Save
+      </Button>
+    );
+  }
   return (
     <>
       {savedByCurrentUser ? (

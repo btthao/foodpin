@@ -31,8 +31,7 @@ const RecipePage: NextPage = () => {
   const router = useRouter();
   const recipeId = router.query?.id ? (router.query.id as string) : null;
   const [recipeData, setRecipeData] = useState<RecipeData | null>(null);
-  const { id: currentUserId, username: currentUserName } =
-    useAppSelector(selectUser);
+  const { currentUser } = useAppSelector(selectUser);
   const progress = new ProgressBar({
     size: 4,
     color: "#87ce7e",
@@ -170,7 +169,7 @@ const RecipePage: NextPage = () => {
                           View image
                         </a>
                       </MenuItem>
-                      {recipeData.byUser._id === currentUserId && (
+                      {recipeData.byUser._id === currentUser?._id && (
                         <>
                           <EditRecipe
                             data={recipeData}
@@ -210,12 +209,12 @@ const RecipePage: NextPage = () => {
                   </Button>
                 </div>
                 <SaveRecipe
-                  userId={currentUserId}
+                  userId={currentUser?._id}
                   recipeId={recipeData._id}
                   saved={
                     recipeData.save && recipeData.save.length > 0
                       ? recipeData.save.filter(
-                          (savedBy) => savedBy.userId === currentUserId
+                          (savedBy) => savedBy.userId === currentUser?._id
                         ).length === 1
                       : false
                   }
@@ -226,7 +225,7 @@ const RecipePage: NextPage = () => {
                 <span className="font-bold">
                   <Link href={`/${recipeData?.byUser._id}`}>
                     <a>
-                      {recipeData.byUser._id === currentUserId
+                      {recipeData.byUser._id === currentUser?._id
                         ? "you"
                         : recipeData.byUser.userName}
                     </a>

@@ -16,7 +16,7 @@ interface PinProps {
 
 const Pin: React.FC<PinProps> = ({ data }) => {
   const { name, _id, byUser, destination, image1, image2, save } = data;
-  const { id: currentUserId } = useAppSelector(selectUser);
+  const { currentUser } = useAppSelector(selectUser);
   const toast = useToast();
   const router = useRouter();
 
@@ -43,12 +43,13 @@ const Pin: React.FC<PinProps> = ({ data }) => {
               </Link>
             </div>
             <SaveRecipe
-              userId={currentUserId}
+              userId={currentUser?._id}
               recipeId={_id}
               saved={
                 save && save.length
-                  ? save.filter((savedBy) => savedBy.userId === currentUserId)
-                      .length === 1
+                  ? save.filter(
+                      (savedBy) => savedBy.userId === currentUser?._id
+                    ).length === 1
                   : false
               }
             />

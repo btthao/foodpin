@@ -86,7 +86,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     builderData?.destination || ""
   );
   // end recipe data state
-  const { id: userId } = useAppSelector(selectUser);
+  const { currentUser } = useAppSelector(selectUser);
   const [upload, setUpload] = useState<number>(uploadState.NOT_UPLOADING);
   const [showSpinner, setShowSpinner] = useState(false);
   const [isMissingFields, setIsMissingFields] = useState(false);
@@ -113,7 +113,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       image2,
       byUser: {
         _type: "byUser",
-        _ref: userId,
+        _ref: currentUser!._id,
       },
     };
 
@@ -130,7 +130,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     client
       .transaction()
       .create(doc)
-      .patch(userId, (p) =>
+      .patch(currentUser!._id, (p) =>
         p.setIfMissing({ createdList: [] }).insert("after", "createdList[-1]", [
           {
             _key: uuidv4(),

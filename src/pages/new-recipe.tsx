@@ -8,18 +8,23 @@ import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { BuildersStack, RecipeFromWeb } from "../components";
 import ButtonGroup from "../components/ButtonGroup";
+import { selectUser } from "../store/features/userSlice";
+import { useAppSelector } from "../store/store";
 
 const createMethods = ["Create recipe", "Copy from web"];
 
 const NewRecipe: NextPage = () => {
   const [createMethod, setCreateMethod] = useState(createMethods[0]);
   const [errorMessage, setErrorMessage] = useState("");
+  const { currentUser } = useAppSelector(selectUser);
 
   useEffect(() => {
     if (errorMessage !== "") {
       setTimeout(() => setErrorMessage(""), 10000);
     }
   }, [errorMessage]);
+
+  if (!currentUser) return null;
 
   return (
     <>
