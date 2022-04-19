@@ -7,16 +7,22 @@ import { client } from "../client";
 import { Avatar } from "../components";
 import ButtonGroup from "../components/ButtonGroup";
 import UserList from "../components/user/UserList";
-import { User, userQuery } from "../utils/data";
+import {
+  resetList,
+  selectUserPage,
+  setListData,
+} from "../store/features/userPageSlice";
+import { useAppDispatch, useAppSelector } from "../store/store";
+import { RecipeRef, User, userQuery } from "../utils/data";
 
-interface UserPageProps {}
-
-const UserPage: NextPage = ({}) => {
+const UserPage: NextPage = () => {
   const router = useRouter();
   const userId = router.query?.id ? (router.query.id as string) : null;
   const [userData, setUserData] = useState<User | null>(null);
   const [userNotExist, setUserNotExist] = useState(false);
   const [list, setList] = useState("Created");
+  const { saveList, createdList } = useAppSelector(selectUserPage);
+  const dispatch = useAppDispatch();
   const progress = new ProgressBar({
     size: 4,
     color: "#87ce7e",
@@ -34,7 +40,22 @@ const UserPage: NextPage = ({}) => {
           if (!data.length) {
             setUserNotExist(true);
           }
-          // console.log(data[0]);
+
+          dispatch(
+            setListData({
+              userId,
+              saveList: data[0].saveList?.length
+                ? data[0].saveList
+                    .filter((recipe: RecipeRef) => recipe.recipeRef)
+                    .map((recipe: RecipeRef) => recipe.recipeRef)
+                : [],
+              createdList: data[0].createdList?.length
+                ? data[0].createdList
+                    .filter((recipe: RecipeRef) => recipe.recipeRef)
+                    .map((recipe: RecipeRef) => recipe.recipeRef)
+                : [],
+            })
+          );
           setUserData(data[0]);
         })
         .catch((err) => {
@@ -53,6 +74,8 @@ const UserPage: NextPage = ({}) => {
 
   useEffect(() => {
     setUserNotExist(false);
+    setList("Created");
+    dispatch(resetList());
     fetchUser();
   }, [userId]);
 
@@ -75,15 +98,9 @@ const UserPage: NextPage = ({}) => {
           </div>
           <div className="mt-12 w-full">
             {list === "Created" ? (
-              <UserList
-                key={userId + "-created"}
-                recipes={userData.createdList?.length ? userData.createdList.filter(recipe => recipe.recipeRef) : null}
-              />
+              <UserList key={userId + "-created"} recipes={createdList} />
             ) : (
-              <UserList
-                key={userId + "-saved"}
-                recipes={userData.saveList?.length ? userData.saveList.filter(recipe => recipe.recipeRef) : null}
-              />
+              <UserList key={userId + "-saved"} recipes={saveList} />
             )}
           </div>
         </div>

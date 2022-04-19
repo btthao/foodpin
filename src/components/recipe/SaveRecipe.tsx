@@ -1,10 +1,15 @@
 import { Button, useToast } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { client } from "../../client";
 import { v4 as uuidv4 } from "uuid";
 import { useAppDispatch } from "../../store/store";
 import { updateSaveStatus } from "../../store/features/feedSlice";
 import LoginModal from "../user/LoginModal";
+import {
+  selectUserPage,
+  updateSaveStatusUserList,
+} from "../../store/features/userPageSlice";
+import { useSelector } from "react-redux";
 
 interface SaveRecipeProps {
   recipeId: string;
@@ -17,6 +22,12 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
   const toast = useToast();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
+  const { userId: userPageId } = useSelector(selectUserPage);
+
+  useEffect(() => {
+    setSavedByCurrentUser(saved);
+  }, [saved]);
+
   if (!userId) {
     return (
       <LoginModal
@@ -49,6 +60,14 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
                 setSavedByCurrentUser(false);
                 dispatch(
                   updateSaveStatus({ _id: recipeId, userId, saved: false })
+                );
+                dispatch(
+                  updateSaveStatusUserList({
+                    _id: recipeId,
+                    userId,
+                    saved: false,
+                    isOwnList: userId === userPageId,
+                  })
                 );
               })
               .catch((err) => {
@@ -115,6 +134,14 @@ const SaveRecipe: React.FC<SaveRecipeProps> = ({ recipeId, userId, saved }) => {
                 setSavedByCurrentUser(true);
                 dispatch(
                   updateSaveStatus({ _id: recipeId, userId, saved: true })
+                );
+                dispatch(
+                  updateSaveStatusUserList({
+                    _id: recipeId,
+                    userId,
+                    saved: true,
+                    isOwnList: userId === userPageId,
+                  })
                 );
               })
               .catch((err) => {
