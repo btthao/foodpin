@@ -7,7 +7,10 @@ import {
   TagCloseButton,
   TagLabel,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { setSearchQuery } from "../../store/features/feedSlice";
+import { useAppDispatch } from "../../store/store";
 
 interface CategoriesProps {
   id: string;
@@ -23,6 +26,8 @@ const Categories: React.FC<CategoriesProps> = ({
   const [addNewCategory, setAddNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [isError, setIsError] = useState(false);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const updateCategories = () => {
     if (setCategories) {
@@ -46,6 +51,17 @@ const Categories: React.FC<CategoriesProps> = ({
     }
   };
 
+  const searchCategory = (category: string) => {
+    if (setCategories) return;
+    dispatch(setSearchQuery(category));
+    router.push({
+      pathname: "/search",
+      query: {
+        q: category,
+      },
+    });
+  };
+
   return (
     <div className="flex flex-wrap gap-3">
       {categories.map((cat, idx) => (
@@ -57,8 +73,14 @@ const Categories: React.FC<CategoriesProps> = ({
           color="black"
           py="2"
           px="3"
+          className={`${!setCategories ? "cursor-pointer" : ""}`}
         >
-          <TagLabel textTransform="capitalize">{cat}</TagLabel>
+          <TagLabel
+            textTransform="capitalize"
+            onClick={() => searchCategory(cat)}
+          >
+            {cat}
+          </TagLabel>
           {setCategories && (
             <TagCloseButton ml="3" onClick={() => removeCategory(cat, idx)} />
           )}

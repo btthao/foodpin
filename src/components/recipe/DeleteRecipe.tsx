@@ -34,9 +34,9 @@ const DeleteRecipe: React.FC<DeleteRecipeProps> = ({
     client
       .delete(id)
       .then(() => {
-        finishDeleteExistingRecipe();
         dispatch(resetFeed());
         setIsDeleting(false);
+        finishDeleteExistingRecipe();
       })
       .catch((err) => {
         console.log(err);
