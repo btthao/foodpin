@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { GoogleLoginResponse } from "react-google-login";
+import { BsPlusLg } from "react-icons/bs";
 import { IoIosAddCircle } from "react-icons/io";
 import { Avatar, LoginModal, Search } from ".";
 import { login, logout, selectUser } from "../store/features/userSlice";
@@ -14,7 +15,6 @@ const Header: React.FC = () => {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
-  // check if user already exists in local storage
   useEffect(() => {
     const profileObj: GoogleLoginResponse["profileObj"] | null =
       localStorage.getItem("fp-user") !== "undefined"
@@ -47,107 +47,104 @@ const Header: React.FC = () => {
   }, []);
 
   return (
-    <header
-      className={`fixed top-0 left-0 w-full  px-4 sm:px-5  bg-white z-[1000] transition-shadow duration-500 ${
-        scrolled ? "shadow-sm" : "shadow-none"
-      }`}
-    >
-      <div className="flex h-20 items-center">
-        {/* logo */}
-        <div
-          className="cursor-pointer flex items-center"
-          onClick={() => router.push("/")}
-        >
-          <Image src="/assets/logo.png" width={30} height={30} alt="logo" />
-        </div>
-        {/* categories */}
-        <Button
-          variant="ghost"
-          border="2px"
-          borderColor="white"
-          borderRadius="3xl"
-          fontWeight="bold"
-          fontSize={{
-            md: "large",
-          }}
-          py="5"
-          px="4"
-          className="ml-4 sm:ml-7"
-          _hover={{ bg: "bgGrey", borderColor: "bgGrey" }}
-        >
-          Categories
-        </Button>
-        {/* searchbar */}
-        <div className="flex-1 mx-4 sm:mx-7">
-          <Search />
-        </div>
-        {/* user space */}
-        <div>
-          {!currentUser ? (
-            <LoginModal
-              btnProps={{
-                variant: "dark",
-                borderRadius: "3xl",
-                fontWeight: "bold",
-                py: "5",
-                px: "4",
-                fontSize: {
-                  md: "large",
-                },
-              }}
-              btnText="Login"
-            />
-          ) : (
-            <div className="flex items-center">
-              <Button
-                p="0"
-                width="44px"
-                height="44px"
-                borderRadius="full"
-                variant="ghost"
-                mx="2"
-                onClick={() => router.push("/new-recipe")}
-              >
-                <IoIosAddCircle className="text-[36px] text-grey-icon" />
-              </Button>
-              <Menu autoSelect={false}>
-                <MenuButton
+    <>
+      <header
+        className={`fixed top-0 left-0 w-full  px-4 sm:px-5  bg-white z-[1000] transition-shadow duration-500 ${
+          scrolled ? "shadow-sm" : "shadow-none"
+        }`}
+      >
+        <div className="flex h-20 items-center">
+          {/* logo */}
+          <div
+            className="cursor-pointer flex items-center"
+            onClick={() => router.push("/")}
+          >
+            <Image src="/assets/logo.png" width={32} height={32} alt="logo" />
+          </div>
+          {/* searchbar */}
+          <div className="flex-1 mx-4 sm:mx-7">
+            <Search />
+          </div>
+          {/* user space */}
+          <div>
+            {!currentUser ? (
+              <LoginModal
+                btnProps={{
+                  variant: "dark",
+                  borderRadius: "3xl",
+                  fontWeight: "bold",
+                  py: "5",
+                  px: "4",
+                  fontSize: {
+                    md: "large",
+                  },
+                }}
+                btnText="Login"
+              />
+            ) : (
+              <div className="flex items-center">
+                <Button
                   p="0"
-                  width="44px"
-                  height="44px"
+                  width="48px"
+                  height="48px"
                   borderRadius="full"
                   variant="ghost"
-                  as={Button}
+                  mr="2"
+                  className="hidden sm:flex"
+                  onClick={() => router.push("/new-recipe")}
                 >
-                  <Avatar name={currentUser.userName} src={currentUser.image} />
-                </MenuButton>
-                <MenuList
-                  className="shadow-elevated"
-                  border="none"
-                  minWidth="none"
-                >
-                  <MenuItem
-                    fontWeight="bold"
-                    pr="20"
-                    _hover={{ bg: "bgGrey" }}
-                    onClick={() => router.push(`/${currentUser._id}`)}
+                  <IoIosAddCircle className="text-[38px] text-grey-icon" />
+                </Button>
+                <Menu autoSelect={false}>
+                  <MenuButton
+                    p="0"
+                    width="48px"
+                    height="48px"
+                    borderRadius="full"
+                    variant="ghost"
+                    as={Button}
                   >
-                    My profile
-                  </MenuItem>
-                  <MenuItem
-                    fontWeight="bold"
-                    _hover={{ bg: "bgGrey" }}
-                    onClick={handleLogout}
+                    <Avatar
+                      name={currentUser.userName}
+                      src={currentUser.image}
+                    />
+                  </MenuButton>
+                  <MenuList
+                    className="shadow-elevated"
+                    border="none"
+                    minWidth="none"
                   >
-                    Log out
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </div>
-          )}
+                    <MenuItem
+                      fontWeight="bold"
+                      pr="20"
+                      _hover={{ bg: "bgGrey" }}
+                      onClick={() => router.push(`/${currentUser._id}`)}
+                    >
+                      My profile
+                    </MenuItem>
+                    <MenuItem
+                      fontWeight="bold"
+                      _hover={{ bg: "bgGrey" }}
+                      onClick={handleLogout}
+                    >
+                      Log out
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </div>
+            )}
+          </div>
         </div>
+      </header>
+      <div className="sm:hidden fixed bottom-8 right-5 z-[1000] ">
+        <button
+          className="bg-white hover:bg-grey1 border-white shadow-elevated border-4 p-3 rounded-full "
+          onClick={() => router.push("/new-recipe")}
+        >
+          <BsPlusLg className="text-2xl" />
+        </button>
       </div>
-    </header>
+    </>
   );
 };
 

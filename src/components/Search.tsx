@@ -8,16 +8,19 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { client } from "../client";
-import { selectFeed, setFeedData } from "../store/features/feedSlice";
+import {
+  selectFeed,
+  setFeedData,
+  setSearchQuery,
+} from "../store/features/feedSlice";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { feedQuery, searchFeedQuery } from "../utils/data";
 interface SearchProps {}
 
 const Search: React.FC<SearchProps> = ({}) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { mainFeed } = useAppSelector(selectFeed);
+  const { mainFeed, searchQuery } = useAppSelector(selectFeed);
   const searchInput = useRef<any>(null);
   const toast = useToast();
 
@@ -67,18 +70,22 @@ const Search: React.FC<SearchProps> = ({}) => {
     // fetch when search input is focused
     if (document.activeElement === searchInput.current) {
       searchRecipes();
+    } else if (searchQuery) {
+      searchInput.current.focus();
     }
   }, [searchQuery]);
 
   useEffect(() => {
     const path = router.asPath;
     if (path.includes("/search")) {
-      setSearchQuery(
-        path.indexOf("q=") > -1 ? path.slice(path.indexOf("q=") + 2) : ""
+      dispatch(
+        setSearchQuery(
+          path.indexOf("q=") > -1 ? path.slice(path.indexOf("q=") + 2) : ""
+        )
       );
       setTimeout(() => {
         searchInput.current.focus();
-      }, 100);
+      }, 50);
     }
   }, []);
 
@@ -106,7 +113,7 @@ const Search: React.FC<SearchProps> = ({}) => {
         }}
         value={searchQuery}
         onChange={(e) => {
-          setSearchQuery(e.target.value);
+          dispatch(setSearchQuery(e.target.value));
         }}
         onFocus={() => searchRecipes()}
         ref={searchInput}

@@ -1,3 +1,3 @@
 export const copyUrlToClipboard = (id: string) => {
-  navigator.clipboard.writeText("http://localhost:3000/recipe/" + id);
+  navigator.clipboard.writeText(process.env.NEXT_PUBLIC_URL + "/recipe/" + id);
 };

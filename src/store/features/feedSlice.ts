@@ -5,11 +5,13 @@ import produce from "immer";
 
 export interface FeedState {
   mainFeed: RecipeData[];
+  searchQuery: string;
   searchFeed: RecipeData[];
 }
 
 const initialState: FeedState = {
   mainFeed: [],
+  searchQuery: "",
   searchFeed: [],
 };
 
@@ -17,6 +19,9 @@ export const feedSlice = createSlice({
   name: "feed",
   initialState,
   reducers: {
+    setSearchQuery: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload;
+    },
     setFeedData: (
       state,
       action: PayloadAction<{ type: string; data: RecipeData[] }>
@@ -71,7 +76,8 @@ export const feedSlice = createSlice({
   },
 });
 
-export const { setFeedData, updateSaveStatus, resetFeed } = feedSlice.actions;
+export const { setFeedData, updateSaveStatus, resetFeed, setSearchQuery } =
+  feedSlice.actions;
 
 export const selectFeed = (state: RootState) => state.feed;
 

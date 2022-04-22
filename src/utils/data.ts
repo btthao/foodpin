@@ -32,8 +32,8 @@ export type User = {
   _id: string;
   userName: string;
   image: string;
-  createdList: RecipeRef[] | null;
-  saveList: RecipeRef[] | null;
+  createdList?: RecipeRef[];
+  saveList?: RecipeRef[];
 };
 
 export type Save = {
