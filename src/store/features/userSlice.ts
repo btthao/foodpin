@@ -12,7 +12,7 @@ const initialState: UserState = {
   currentUser: null,
 };
 
-export const login = createAsyncThunk(
+export const loginAsync = createAsyncThunk(
   "user/loginUser",
   async (profileObj: GoogleLoginResponse["profileObj"]) => {
     const { name, imageUrl, googleId } = profileObj;
@@ -30,13 +30,11 @@ export const login = createAsyncThunk(
       .then((res) => {
         console.log("create user doc response", res);
         localStorage.setItem("fp-user", JSON.stringify(profileObj));
-        const { userName, _id, image, createdList, saveList } = res;
+        const { userName, _id, image } = res;
         return {
           _id,
           userName,
           image,
-          createdList,
-          saveList,
         };
       })
       .catch((err) => {
@@ -55,10 +53,21 @@ export const userSlice = createSlice({
       localStorage.removeItem("fp-user");
       state.currentUser = null;
     },
+    login: (
+      state,
+      action: PayloadAction<GoogleLoginResponse["profileObj"]>
+    ) => {
+      const { name, imageUrl, googleId } = action.payload;
+      state.currentUser = {
+        _id: googleId,
+        userName: name,
+        image: imageUrl,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(
-      login.fulfilled,
+      loginAsync.fulfilled,
       (state, action: PayloadAction<User | null>) => {
         state.currentUser = action.payload;
       }
@@ -66,7 +75,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, login } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 

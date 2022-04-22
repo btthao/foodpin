@@ -33,6 +33,7 @@ export const userPageSlice = createSlice({
         isOwnList?: boolean;
       }>
     ) => {
+      if (!state.userId) return;
       const changeSaveStatus = (list: RecipeData[]) => {
         return produce(list, (draft) => {
           for (let i = 0; i < list.length; i++) {
@@ -72,7 +73,9 @@ export const userPageSlice = createSlice({
           const savedRecipe = newCreatedList.filter(
             (recipe) => recipe._id == action.payload._id
           )[0];
-          state.saveList = [...newSaveList, savedRecipe];
+          if (savedRecipe) {
+            state.saveList = [...newSaveList, savedRecipe];
+          }
         } else {
           state.saveList = newSaveList.filter(
             (recipe) => recipe._id !== action.payload._id

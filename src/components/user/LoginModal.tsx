@@ -12,7 +12,7 @@ import Image from "next/image";
 import React from "react";
 import GoogleLogin, { GoogleLoginResponse } from "react-google-login";
 import { FcGoogle } from "react-icons/fc";
-import { login } from "../../store/features/userSlice";
+import { loginAsync } from "../../store/features/userSlice";
 import { useAppDispatch } from "../../store/store";
 
 interface LoginModalProps {
@@ -27,7 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ btnProps, btnText }) => {
   const handleLogin = (response: any) => {
     const profileObj: GoogleLoginResponse["profileObj"] = response?.profileObj;
     if (profileObj) {
-      dispatch(login(profileObj));
+      dispatch(loginAsync(profileObj));
     }
   };
 
