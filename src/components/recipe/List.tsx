@@ -92,7 +92,7 @@ const List: React.FC<ListProps> = ({ name, list, updateList, upload }) => {
             }`}
           >
             {name.includes("instructions") && (
-              <div className="font-bold ">step {idx + 1} </div>
+              <div className="font-bold ">Step {idx + 1} </div>
             )}
             <Editable
               submitOnBlur={true}

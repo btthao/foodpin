@@ -24,7 +24,12 @@ const NewRecipe: NextPage = () => {
     }
   }, [errorMessage]);
 
-  if (!currentUser) return null;
+  if (!currentUser)
+    return (
+      <div className="text-center mt-36 font-bold text-lg">
+        Only signed in users can create recipe!
+      </div>
+    );
 
   return (
     <>

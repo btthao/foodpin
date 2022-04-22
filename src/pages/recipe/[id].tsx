@@ -105,9 +105,9 @@ const RecipePage: NextPage = () => {
       {recipeData && (
         <div className=" max-w-xl lg:max-w-5xl mx-auto py-4">
           <div className="flex flex-col lg:flex-row lg:p-4 bg-white shadow-elevated rounded-3xl overflow-hidden">
-            <div className="lg:flex-1 bg-grey1 rounded-3xl overflow-hidden h-fit">
+            <div className="lg:flex-1 bg-grey1 rounded-tl-3xl rounded-tr-3xl lg:rounded-3xl overflow-hidden h-fit">
               <img
-                className="w-full rounded-3xl"
+                className="w-full "
                 src={
                   recipeData.image1
                     ? urlFor(recipeData.image1).url()
