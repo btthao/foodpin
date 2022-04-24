@@ -5,7 +5,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { client } from "../client";
 import {
@@ -36,33 +36,59 @@ const Search: React.FC<SearchProps> = ({}) => {
       if (mainFeed.length) {
         dispatch(setFeedData({ type: "search", data: mainFeed }));
       } else {
-        client.fetch(feedQuery).then((data) => {
-          dispatch(setFeedData({ type: "main", data }));
-          dispatch(setFeedData({ type: "search", data }));
-          toast.closeAll();
-          console.log(data.length);
-        });
+        client
+          .fetch(feedQuery)
+          .then((data) => {
+            dispatch(setFeedData({ type: "main", data }));
+            dispatch(setFeedData({ type: "search", data }));
+            toast.closeAll();
+          })
+          .catch((err) => {
+            console.error(err);
+            if (!toast.isActive("fetch-err")) {
+              toast({
+                id: "fetch-err",
+                title: "Something went wrong. Try again later.",
+                status: "error",
+                duration: null,
+                isClosable: true,
+              });
+            }
+          });
       }
     } else {
-      client.fetch(searchFeedQuery(searchQuery.toLowerCase())).then((data) => {
-        dispatch(setFeedData({ type: "search", data }));
-        console.log(data.length);
+      client
+        .fetch(searchFeedQuery(searchQuery.toLowerCase()))
+        .then((data) => {
+          dispatch(setFeedData({ type: "search", data }));
 
-        if (!data.length) {
-          if (!toast.isActive("no-result")) {
+          if (!data.length) {
+            if (!toast.isActive("no-result")) {
+              toast({
+                id: "no-result",
+                title: "No results",
+                status: "error",
+                variant: "subtle",
+                duration: null,
+                isClosable: false,
+              });
+            }
+          } else {
+            toast.closeAll();
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          if (!toast.isActive("fetch-err")) {
             toast({
-              id: "no-result",
-              title: "No results",
+              id: "fetch-err",
+              title: "Something went wrong. Try again later.",
               status: "error",
-              variant: "subtle",
               duration: null,
-              isClosable: false,
+              isClosable: true,
             });
           }
-        } else {
-          toast.closeAll();
-        }
-      });
+        });
     }
   };
 

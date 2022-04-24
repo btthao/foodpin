@@ -104,13 +104,13 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     const doc: RecipeDoc = {
       _type: "recipe",
       _id: id,
-      name,
+      name: name.trim(),
       ingredients,
       instructions,
       categories,
-      servings,
-      destination,
-      image2,
+      servings: servings.trim(),
+      destination: destination.trim(),
+      image2: image2.trim(),
       byUser: {
         _type: "byUser",
         _ref: currentUser!._id,

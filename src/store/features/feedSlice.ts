@@ -27,9 +27,11 @@ export const feedSlice = createSlice({
       action: PayloadAction<{ type: string; data: RecipeData[] }>
     ) => {
       if (action.payload.type === "main") {
-        state.mainFeed = action.payload.data;
+        state.mainFeed = action.payload.data.filter((recipe) => recipe.byUser);
       } else {
-        state.searchFeed = action.payload.data;
+        state.searchFeed = action.payload.data.filter(
+          (recipe) => recipe.byUser
+        );
       }
     },
     updateSaveStatus: (

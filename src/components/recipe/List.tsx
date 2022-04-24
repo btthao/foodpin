@@ -97,7 +97,7 @@ const List: React.FC<ListProps> = ({ name, list, updateList, upload }) => {
             <Editable
               submitOnBlur={true}
               className="flex"
-              defaultValue={item}
+              defaultValue={item.trim()}
               isPreviewFocusable={false}
               onSubmit={(newValue) => {
                 editList(idx, newValue);

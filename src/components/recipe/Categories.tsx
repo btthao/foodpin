@@ -77,9 +77,9 @@ const Categories: React.FC<CategoriesProps> = ({
         >
           <TagLabel
             textTransform="capitalize"
-            onClick={() => searchCategory(cat)}
+            onClick={() => searchCategory(cat.trim())}
           >
-            {cat}
+            {cat.trim()}
           </TagLabel>
           {setCategories && (
             <TagCloseButton ml="3" onClick={() => removeCategory(cat, idx)} />

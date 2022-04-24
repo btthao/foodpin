@@ -7,6 +7,7 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import React from "react";
@@ -23,7 +24,7 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ btnProps, btnText }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useAppDispatch();
-
+  const toast = useToast();
   const handleLogin = (response: any) => {
     const profileObj: GoogleLoginResponse["profileObj"] = response?.profileObj;
     if (profileObj) {
@@ -31,7 +32,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ btnProps, btnText }) => {
     }
   };
 
-  const handleError = () => {};
+  const handleError = () => {
+    toast({
+      title: "There was a problem logging you in.",
+      status: "error",
+      duration: null,
+      isClosable: true,
+    });
+  };
 
   return (
     <>

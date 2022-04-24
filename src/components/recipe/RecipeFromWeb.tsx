@@ -93,10 +93,22 @@ const RecipeFromWeb: React.FC<RecipeFromWebProps> = ({ showError }) => {
                 py="5"
                 borderColor="borderGrey"
                 borderWidth="2px"
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") getRecipeData();
+                }}
               />
             </InputGroup>
             <div className="mx-3">
               <p className="text-sm text-grey-muted mt-2">
+                Results may vary depending on the website, as this{" "}
+                <a
+                  href="https://www.npmjs.com/package/recipe-data-scraper"
+                  target="_blank"
+                  className="font-bold"
+                >
+                  library{" "}
+                </a>
+                works best with those that utilize either microdata or JSON-LD.
                 Example:
                 https://www.bbcgoodfood.com/recipes/steaks-goulash-sauce-sweet-potato-fries
               </p>

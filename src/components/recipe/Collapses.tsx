@@ -1,4 +1,5 @@
 import { Button, Collapse, useDisclosure } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
 interface CollapsesProps {
@@ -8,6 +9,11 @@ interface CollapsesProps {
 
 const Collapses: React.FC<CollapsesProps> = ({ title, content }) => {
   const { isOpen, onToggle } = useDisclosure();
+  useEffect(() => {
+    if (title === "Ingredients") {
+      onToggle();
+    }
+  }, []);
   return (
     <div>
       <div className="flex items-center gap-1">

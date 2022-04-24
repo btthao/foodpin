@@ -260,7 +260,7 @@ const RecipePage: NextPage = () => {
                       <ul className="text-sm">
                         {recipeData.ingredients.map((ingredient, idx) => (
                           <li key={`${recipeData._id}-${ingredient}-${idx}`}>
-                            {ingredient}
+                            {ingredient.trim()}
                           </li>
                         ))}
                       </ul>
@@ -280,7 +280,7 @@ const RecipePage: NextPage = () => {
                             key={`${recipeData._id}-${instruction}-${idx}`}
                           >
                             <h6 className="font-bold">Step {idx + 1}</h6>
-                            <p>{instruction}</p>
+                            <p>{instruction.trim()}</p>
                           </li>
                         ))}
                       </ul>

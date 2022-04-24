@@ -83,18 +83,20 @@ const Header: React.FC = () => {
               />
             ) : (
               <div className="flex items-center">
-                <Button
-                  p="0"
-                  width="48px"
-                  height="48px"
-                  borderRadius="full"
-                  variant="ghost"
-                  mr="2"
-                  className="hidden sm:flex"
-                  onClick={() => router.push("/new-recipe")}
-                >
-                  <IoIosAddCircle className="text-[38px] text-grey-icon" />
-                </Button>
+                {!router.pathname.includes("new-recipe") && (
+                  <Button
+                    p="0"
+                    width="48px"
+                    height="48px"
+                    borderRadius="full"
+                    variant="ghost"
+                    mr="2"
+                    className="hidden sm:flex"
+                    onClick={() => router.push("/new-recipe")}
+                  >
+                    <IoIosAddCircle className="text-[38px] text-grey-icon" />
+                  </Button>
+                )}
                 <Menu autoSelect={false}>
                   <MenuButton
                     p="0"
@@ -136,14 +138,16 @@ const Header: React.FC = () => {
           </div>
         </div>
       </header>
-      <div className="sm:hidden fixed bottom-8 right-5 z-[1000] ">
-        <button
-          className="bg-white hover:bg-grey1 border-white shadow-elevated border-4 p-3 rounded-full "
-          onClick={() => router.push("/new-recipe")}
-        >
-          <BsPlusLg className="text-2xl" />
-        </button>
-      </div>
+      {currentUser && !router.pathname.includes("new-recipe") && (
+        <div className="sm:hidden fixed bottom-8 right-5 z-[1000] ">
+          <button
+            className="bg-white hover:bg-grey1 border-white shadow-elevated border-4 p-3 rounded-full "
+            onClick={() => router.push("/new-recipe")}
+          >
+            <BsPlusLg className="text-2xl" />
+          </button>
+        </div>
+      )}
     </>
   );
 };
