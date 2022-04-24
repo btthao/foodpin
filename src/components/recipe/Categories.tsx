@@ -53,11 +53,11 @@ const Categories: React.FC<CategoriesProps> = ({
 
   const searchCategory = (category: string) => {
     if (setCategories) return;
-    dispatch(setSearchQuery(category));
+    dispatch(setSearchQuery(category.trim()));
     router.push({
       pathname: "/search",
       query: {
-        q: category,
+        q: category.trim(),
       },
     });
   };

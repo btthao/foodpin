@@ -36,9 +36,9 @@ const Pin: React.FC<PinProps> = ({ data }) => {
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-between p-3 z-50 bg-black bg-opacity-30 text-white opacity-0 hover:opacity-100">
           <div className="w-full flex justify-between items-center gap-6">
             <div className="flex-1 truncate">
-              <Link href={`/${byUser._id}`}>
+              <Link href={`/${byUser?._id}`}>
                 <a className="font-bold" onClick={(e) => e.stopPropagation()}>
-                  {byUser.userName}
+                  {byUser?.userName}
                 </a>
               </Link>
             </div>
