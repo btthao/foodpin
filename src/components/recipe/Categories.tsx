@@ -76,6 +76,7 @@ const Categories: React.FC<CategoriesProps> = ({
           className={`${!setCategories ? "cursor-pointer" : ""}`}
         >
           <TagLabel
+            className="truncate max-w-[100px]"
             textTransform="capitalize"
             onClick={() => searchCategory(cat.trim())}
           >
