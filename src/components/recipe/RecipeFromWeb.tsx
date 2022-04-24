@@ -40,8 +40,6 @@ const RecipeFromWeb: React.FC<RecipeFromWebProps> = ({ showError }) => {
 
     setLoading(false);
 
-    console.log(data);
-
     if (data?.message) {
       showError(data.message);
     } else if (data?.recipe) {

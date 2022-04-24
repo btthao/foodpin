@@ -28,7 +28,6 @@ export const loginAsync = createAsyncThunk(
     const response = await client
       .createIfNotExists(doc)
       .then((res) => {
-        console.log("create user doc response", res);
         localStorage.setItem("fp-user", JSON.stringify(profileObj));
         const { userName, _id, image } = res;
         return {

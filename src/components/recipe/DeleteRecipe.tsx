@@ -39,7 +39,7 @@ const DeleteRecipe: React.FC<DeleteRecipeProps> = ({
         finishDeleteExistingRecipe();
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setIsDeleting(false);
         setErrorMessage(
           "There was a problem deleting your recipe. Try again later."

@@ -10,7 +10,6 @@ interface UserListProps {
 }
 
 const UserList: React.FC<UserListProps> = ({ recipes }) => {
-  console.log(recipes);
   const [display, setDisplay] = useState("stack");
 
   if (!recipes || !recipes.length) {

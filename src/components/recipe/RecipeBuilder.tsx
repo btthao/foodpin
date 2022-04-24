@@ -311,7 +311,7 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   return (
     <div className="w-full relative bg-white px-5 py-8 md:py-12 md:px-9 rounded-xl shadow-sm">
       {showSpinner && (
-        <div className="absolute  top-0 left-0 w-full h-full bg-white z-50 opacity-90 flex justify-center pt-20">
+        <div className="absolute  top-0 left-0 w-full h-full bg-white z-50 opacity-90 flex justify-center pt-20 rounded-xl">
           <Oval
             ariaLabel="loading-indicator"
             height={100}
