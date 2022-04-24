@@ -31,11 +31,11 @@ const Categories: React.FC<CategoriesProps> = ({
 
   const updateCategories = () => {
     if (setCategories) {
-      if (categories.includes(newCategory.toLowerCase())) {
+      if (categories.includes(newCategory.trim().toLowerCase())) {
         setIsError(true);
       } else {
-        if (newCategory !== "") {
-          setCategories([...categories, newCategory.toLowerCase()]);
+        if (newCategory.trim() !== "") {
+          setCategories([...categories, newCategory.trim().toLowerCase()]);
         }
         setNewCategory("");
         setAddNewCategory(false);

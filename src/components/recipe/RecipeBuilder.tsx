@@ -420,18 +420,20 @@ const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           {/* servings */}
           <div className="mt-8 flex items-center">
             <span className="mr-2 font-bold">Servings: </span>
-            <Input
-              variant="outline"
-              size="sm"
-              type="text"
-              value={servings}
-              onChange={(e) => {
-                setServings(e.target.value);
-              }}
-              borderColor="borderGrey"
-              bg="white"
-              _hover={{ bg: "white" }}
-            />
+            <div className="flex-1">
+              <Input
+                variant="outline"
+                size="sm"
+                type="text"
+                value={servings}
+                onChange={(e) => {
+                  setServings(e.target.value);
+                }}
+                borderColor="borderGrey"
+                bg="white"
+                _hover={{ bg: "white" }}
+              />
+            </div>
           </div>
           {/* categories */}
           <div className="mt-7">

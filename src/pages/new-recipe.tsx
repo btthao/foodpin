@@ -46,7 +46,7 @@ const NewRecipe: NextPage = () => {
           <CloseButton onClick={() => setErrorMessage("")} />
         </Alert>
       )}
-      <div className="max-w-4xl w-screen mx-auto px-9 md:px-12 lg:px-5 py-10 sm:py-16">
+      <div className="max-w-4xl w-full mx-auto px-9 md:px-12 lg:px-5 py-10 sm:py-16">
         <ButtonGroup
           options={createMethods}
           selected={createMethod}
