@@ -55,12 +55,12 @@ const RecipeFromWeb: React.FC<RecipeFromWebProps> = ({ showError }) => {
       } = data.recipe;
 
       setRecipeInfo({
-        name: name || "",
+        name: name?.trim() || "",
         ingredients: isValidList(recipeIngredients) ? recipeIngredients : [],
         instructions: isValidList(recipeInstructions) ? recipeInstructions : [],
         categories: isValidList(recipeCategories) ? recipeCategories : [],
-        servings: recipeYield?.toString() || "",
-        image2: image || "",
+        servings: recipeYield?.toString().trim() || "",
+        image2: image?.trim() || "",
         destination: url,
       });
 
